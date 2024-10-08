@@ -11,7 +11,7 @@ import usePlayer from '../hooks/usePlayer';
 import formatSeconds from '../utils/formatSeconds';
 
 // TODO: refactor and componentize
-const ControlBar = () => {
+const ControlBar = ({ navigation }) => {
    const { notify, notificationTypes } = useNotification();
    const playback = usePlaybackState();
    const { restart, pause, resume, setLoopMode, skipToNext, skipToPrevious, getCurrentState, seekTo } = usePlayer();
@@ -64,7 +64,107 @@ const ControlBar = () => {
       })
    ).current;
 
-   // TODO: add seek functionality to the controller progress bar
+   const isDragging = useRef(false);
+   const isProgressBarAnimating = useRef(false);
+   const progressBarHeight = useRef(new Animated.Value(4)).current;
+   const progressBarWidth = useRef(0);
+   const progressBarX = useRef(0);
+   const progress = useRef(new Animated.Value(0)).current;
+   const startingProgress = useRef(0);
+   const progressBarPanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (_, __) => {
+         // Trigger the height increase if not already animating
+         if (!isProgressBarAnimating.current) {
+            isProgressBarAnimating.current = true;
+
+            Animated.timing(progressBarHeight, {
+               toValue: 8, // New height
+               duration: 150,
+               useNativeDriver: false
+            }).start(() => {
+               // Allow shrink animation after pressing
+               isProgressBarAnimating.current = false;
+
+               // Shrink back to original size if not dragging
+               if (!isDragging.current) {
+                  Animated.timing(progressBarHeight, {
+                     toValue: 4,
+                     duration: 150,
+                     useNativeDriver: false
+                  }).start(() => {
+                     isProgressBarAnimating.current = false;
+                  });
+               }
+            });
+         }
+         return true; // Allow the pan responder to capture touches
+      },
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+         // Allow gesture to start if its a horizontal movement
+         return Math.abs(gestureState.dx) > 1;
+      },
+      onPanResponderGrant: () => {
+         isDragging.current = true;
+
+         // Trigger the height increase when dragging starts
+         if (!isProgressBarAnimating.current) {
+            isProgressBarAnimating.current = true;
+
+            Animated.timing(progressBarHeight, {
+               toValue: 8,
+               duration: 150,
+               useNativeDriver: false
+            }).start(() => {
+               isProgressBarAnimating.current = false;
+            });
+         }
+
+         // Store the starting progress percentage
+         progress.addListener(({ value }) => {
+            startingProgress.current = value;
+         });
+      },
+      onPanResponderMove: (_, gestureState) => {
+         const relativeX = gestureState.moveX - progressBarX.current;
+
+         // Are we within bounds of the progress bar ?
+         if (relativeX >= 0 && relativeX <= progressBarWidth.current) {
+            // Calculate the change in position relative to the starting progress
+            // Applying a sensitivity factor to reduce responsiveness; lower == slower
+            const changeInPosition = ((gestureState.dx * 0.5) / progressBarWidth.current) * 100; // Difference in the X position
+            const newPercentage = startingProgress.current + changeInPosition;
+
+            // Constrain the new percentage to be within 0 ~ 100
+            const constrainedPercentage = Math.max(0, Math.min(newPercentage, 100));
+
+            // Update animated progress bar
+            progress.setValue(constrainedPercentage);
+
+            // Seek to the new position when user drags
+            const newPosition = (constrainedPercentage / 100) * duration;
+            handleSeek(newPosition);
+         }
+      },
+      onPanResponderRelease: (_, __) => {
+         isDragging.current = false;
+
+         // Trigger the shrink animation when releasing the bar
+         if (!isProgressBarAnimating.current) {
+            isProgressBarAnimating.current = true;
+
+            Animated.timing(progressBarHeight, {
+               toValue: 4, // Original height
+               duration: 150,
+               useNativeDriver: false
+            }).start(() => {
+               isProgressBarAnimating.current = false;
+            });
+         }
+
+         // Clean up listener after release
+         progress.removeAllListeners();
+      }
+   });
 
    useEffect(() => {
       (async () => {
@@ -92,6 +192,17 @@ const ControlBar = () => {
 
       return () => clearTimeout(autoCloseTimer.current);
    }, [controlMenuVisible]);
+
+   useEffect(() => {
+      navigation?.setOptions({ swipeEnabled: !controllerVisible });
+   }, [controllerVisible]);
+
+   useEffect(() => {
+      if (!isDragging.current && duration > 0) {
+         const currentProgress = (position / duration) * 100;
+         progress.setValue(currentProgress);
+      }
+   }, [position, duration]);
 
    const handlePlayPause = async () => {
       trigger('impactLight');
@@ -200,6 +311,14 @@ const ControlBar = () => {
       }).start();
    };
 
+   const handleSeek = async position => {
+      try {
+         await seekTo(position);
+      } catch {
+         notify('failed to seek', notificationTypes.error);
+      }
+   };
+
    if (!render) return null;
 
    const percentage = duration > 0 ? (parseInt(position) / parseInt(duration)) * 100 : 0;
@@ -284,14 +403,15 @@ const ControlBar = () => {
                <Animated.View
                   style={{ transform: [{ translateY: controllerTranslateY }], paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }}
                   className="absolute z-[60] bg-palette-80 self-center w-full bottom-0 h-[100%] rounded-t-2xl overflow-hidden"
-                  {...controllerPanResponder.panHandlers}
                >
-                  <View className="items-center">
-                     <Image source={ControlIcons.handleIcon} resizeMode="contain" className="h-4 w-9" />
-                  </View>
+                  <View {...controllerPanResponder.panHandlers}>
+                     <View className="items-center">
+                        <Image source={ControlIcons.handleIcon} resizeMode="contain" className="h-4 w-9" />
+                     </View>
 
-                  <View className="items-center my-20">
-                     <Image source={track.artwork ? { uri: track.artwork } : require('../../assets/images/extras/unknown.png')} className="w-96 h-96 rounded-xl" />
+                     <View className="items-center my-20">
+                        <Image source={track.artwork ? { uri: track.artwork } : require('../../assets/images/extras/unknown.png')} className="w-96 h-96 rounded-xl" />
+                     </View>
                   </View>
 
                   <View className="flex-row mb-5 justify-between pr-6">
@@ -310,8 +430,26 @@ const ControlBar = () => {
                   </View>
 
                   <View className="w-full px-7 mb-10">
-                     <View className="w-full bg-palette-60 h-1 rounded-full overflow-hidden mb-2">
-                        <View style={{ width: `${percentage}%` }} className="bg-palette-30 h-full" />
+                     <View className="h-3 justify-center mb-1" {...progressBarPanResponder.panHandlers}>
+                        <Animated.View
+                           className="w-full bg-palette-60 rounded-full overflow-hidden"
+                           style={{ height: progressBarHeight }}
+                           onLayout={event => {
+                              const { width, x } = event.nativeEvent.layout;
+                              progressBarWidth.current = width;
+                              progressBarX.current = x;
+                           }}
+                        >
+                           <Animated.View
+                              style={{
+                                 width: progress.interpolate({
+                                    inputRange: [0, 100],
+                                    outputRange: ['0%', '100%']
+                                 })
+                              }}
+                              className="bg-palette-30 h-full transition-all"
+                           />
+                        </Animated.View>
                      </View>
 
                      {isStoppedOrLoading ? (

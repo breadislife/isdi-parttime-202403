@@ -8,9 +8,9 @@ import ControlBar from '../components/ControlBar';
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => (
+const TabNavigator = ({ navigation }) => (
    <>
-      <ControlBar />
+      <ControlBar navigation={navigation} />
       <Tab.Navigator
          screenOptions={({ route, navigation }) => ({
             header: () => <Header title={route.name === 'HomeTab' ? 'こんにちは, User.' : route.name === 'SearchTab' ? 'Search.' : route.name === 'LibraryTab' ? 'Library.' : ''} navigation={navigation} />,
