@@ -4,7 +4,7 @@ import useNotification from '../../hooks/useNotification';
 import usePlayer from '../../hooks/usePlayer';
 import { UserItem, TrackItem, PlaylistItem, AlbumItem } from '../../components/items';
 import SpinningLoader from '../../components/loaders/SpinningLoader';
-import SlidingTextInputWithCancel from '../../components/SlidingTextInputWithCancel';
+import SlidingTextInputWithCancel from '../../components/inputs/SlidingTextInputWithCancel';
 import PillBar from '../../components/PillBar';
 import services from '../../services';
 import constants from 'com/constants';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { Text, View, SafeAreaView, Image } from 'react-native';
 import { InputIcons } from '../../../assets/images/icons';
-import FloatingLabelTextInput from '../../components/FloatingLabelTextInput';
+import FloatingLabelTextInput from '../../components/inputs/FloatingLabelTextInput';
 import ContinueButton from '../../components/buttons/ContinueButton';
 import validate from 'com/validation';
 

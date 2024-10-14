@@ -11,6 +11,7 @@ import usePlayer from '../hooks/usePlayer';
 import formatSeconds from '../utils/formatSeconds';
 
 // TODO: refactor and componentize
+// TODO: fix controller progressbar
 const ControlBar = ({ navigation }) => {
    const { notify, notificationTypes } = useNotification();
    const playback = usePlaybackState();

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { SafeAreaView, View, Text } from 'react-native';
-import FloatingLabelTextInput from '../../components/FloatingLabelTextInput';
+import FloatingLabelTextInput from '../../components/inputs/FloatingLabelTextInput';
 import ContinueButton from '../../components/buttons/ContinueButton';
 import validate from 'com/validation';
 

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { View, TextInput, Text, Animated, Pressable, Keyboard, Image } from 'react-native';
 
-import { InputIcons } from '../../assets/images/icons';
+import { InputIcons } from '../../../assets/images/icons';
 
 const SlidingTextInputWithCancel = ({ placeholder, value, onChangeText, iconLeft, onIconLeftPress, clearIcon = true, onClearPress = () => onChangeText(''), onCancelPress = () => Keyboard.dismiss(), onFocus = () => {}, ...props }) => {
    const inputRef = useRef(null);
