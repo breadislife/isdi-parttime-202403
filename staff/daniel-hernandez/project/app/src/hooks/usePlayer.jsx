@@ -167,6 +167,17 @@ const usePlayer = () => {
       }
    }, []);
 
+   const getLoopMode = useCallback(async () => {
+      let mode;
+      try {
+         mode = await TrackPlayer.getRepeatMode();
+      } catch (error) {
+         throw new SystemError(`Failed to get loop mode: ${error.message}`);
+      }
+
+      return mode;
+   }, []);
+
    const skipToNext = useCallback(async () => {
       try {
          const queue = await TrackPlayer.getQueue();
@@ -207,6 +218,7 @@ const usePlayer = () => {
       seekTo,
       restart,
       setLoopMode,
+      getLoopMode,
       skipToNext,
       skipToPrevious
    };

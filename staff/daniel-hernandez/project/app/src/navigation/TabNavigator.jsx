@@ -4,13 +4,13 @@ import { BlurView } from 'expo-blur';
 import { TabIcons } from '../../assets/images/icons';
 import { HomeScreen, SearchScreen, LibraryScreen } from '../screens';
 import Header from '../components/Header';
-import ControlBar from '../components/ControlBar';
+import FloatingPlayer from '../components/FloatingPlayer';
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = ({ navigation }) => (
+const TabNavigator = () => (
    <>
-      <ControlBar navigation={navigation} />
+      <FloatingPlayer />
       <Tab.Navigator
          screenOptions={({ route, navigation }) => ({
             header: () => <Header title={route.name === 'HomeTab' ? 'こんにちは, User.' : route.name === 'SearchTab' ? 'Search.' : route.name === 'LibraryTab' ? 'Library.' : ''} navigation={navigation} />,
