@@ -1,11 +1,17 @@
 import Config from 'react-native-config';
 import { useCallback } from 'react';
 import TrackPlayer, { Capability } from 'react-native-track-player';
+import { useAbortController, useControllerStore } from '../store/controller';
+import { useTrackStore } from '../store/track';
 import { SystemError } from 'com/errors';
 import { storage } from '../services';
 import services from '../services';
 
 const usePlayer = () => {
+   const { abortController } = useControllerStore();
+   const { createNewAbortController, abortCurrentAbortController } = useAbortController();
+   const { setCurrentTrackId } = useTrackStore();
+
    const register = useCallback(() => {
       TrackPlayer.registerPlaybackService(() => services.playback);
    }, []);
@@ -38,6 +44,9 @@ const usePlayer = () => {
                return;
             }
 
+            // Set current track id
+            setCurrentTrackId(track.id);
+
             try {
                await TrackPlayer.load({
                   id: track.id,
@@ -69,9 +78,18 @@ const usePlayer = () => {
       }
    }, []);
 
-   const play = useCallback(async (item, range = null, { signal }) => {
+   const play = useCallback(async (item, range = null) => {
       try {
-         const [_, info] = await Promise.all([TrackPlayer.reset(), services.player(item.id, { signal })]);
+         await TrackPlayer.stop();
+
+         // Set new current track id
+         setCurrentTrackId(item.id);
+
+         // Abort previous controller and reset to a new one
+         abortCurrentAbortController();
+         createNewAbortController();
+
+         const [_, info] = await Promise.all([TrackPlayer.reset(), services.player(item.id, { signal: abortController?.signal })]);
 
          await TrackPlayer.load({
             id: item.id,
@@ -93,7 +111,7 @@ const usePlayer = () => {
 
          await TrackPlayer.play();
       } catch (error) {
-         if (signal?.aborted) throw new Error('AbortError');
+         if (abortController?.signal?.aborted) throw new Error('AbortError');
          throw new SystemError(`Player failed: ${error.message}`);
       }
    }, []);
@@ -119,18 +137,6 @@ const usePlayer = () => {
          await TrackPlayer.play();
       } catch (error) {
          throw new SystemError(`Failed to play player: ${error.message}`);
-      }
-   }, []);
-
-   const getCurrentState = useCallback(async () => {
-      try {
-         const state = await TrackPlayer.getPlaybackState();
-         const currentTrack = await TrackPlayer.getActiveTrack();
-         const progress = await TrackPlayer.getProgress();
-
-         return { state, currentTrack, progress };
-      } catch (error) {
-         throw new SystemError(`Failed to get track state: ${error.message}`);
       }
    }, []);
 
@@ -213,7 +219,6 @@ const usePlayer = () => {
       stop,
       pause,
       resume,
-      getCurrentState,
       reset,
       seekTo,
       restart,

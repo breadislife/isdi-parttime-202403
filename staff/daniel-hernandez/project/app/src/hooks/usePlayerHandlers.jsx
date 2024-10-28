@@ -7,7 +7,7 @@ const usePlayerHandlers = () => {
    const { state: playbackState } = usePlaybackState();
    const { position, duration } = useProgress();
    const { notify, notificationTypes } = useNotification();
-   const { seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode } = usePlayer();
+   const { play, seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode } = usePlayer();
 
    const handlePlayPause = async () => {
       trigger('impactLight');
@@ -82,7 +82,17 @@ const usePlayerHandlers = () => {
       }
    };
 
-   return { handlePlayPause, handleSkipPrevious, handleSkipNext, handleToggleLoop, handleSeek };
+   const handlePlay = async track => {
+      try {
+         await play(track);
+      } catch (e) {
+         if (e.message === 'AbortError') return;
+         notify('oopsie-daisy! something went wrong..', notificationTypes.error);
+         return;
+      }
+   };
+
+   return { handlePlayPause, handleSkipPrevious, handleSkipNext, handleToggleLoop, handleSeek, handlePlay };
 };
 
 export default usePlayerHandlers;

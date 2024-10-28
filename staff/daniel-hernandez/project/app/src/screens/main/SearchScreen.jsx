@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Image, Text, SectionList, FlatList } from 'react-native';
 import useNotification from '../../hooks/useNotification';
-import usePlayer from '../../hooks/usePlayer';
+import usePlayerHandlers from '../../hooks/usePlayerHandlers';
+import { useTrackStore } from '../../store/track';
 import { UserItem, TrackItem, PlaylistItem, AlbumItem } from '../../components/items';
 import SpinningLoader from '../../components/loaders/SpinningLoader';
 import SlidingTextInputWithCancel from '../../components/inputs/SlidingTextInputWithCancel';
@@ -16,7 +17,9 @@ const DEFAULT_PILL = { label: 'All', queryType: [...constants.queryTypes], limit
 // TODO: refactor and componentize
 const SearchScreen = () => {
    const { notify, notificationTypes } = useNotification();
-   const { play } = usePlayer();
+   const { handlePlay } = usePlayerHandlers();
+   const { currentTrackId } = useTrackStore();
+
    const [query, setQuery] = useState('');
    const [status, setStatus] = useState({ loading: false, queryDone: false });
    const [selectedPill, setSelectedPill] = useState(DEFAULT_PILL);
@@ -102,22 +105,6 @@ const SearchScreen = () => {
       }
    };
 
-   const [currentTrackId, setCurrentTrackId] = useState(null);
-   const abortController = useRef(0);
-   const handleTrackPress = async track => {
-      if (currentTrackId !== track.id) setCurrentTrackId(track.id);
-      if (abortController.current) abortController.current.abort();
-
-      abortController.current = new AbortController();
-
-      try {
-         await play(track, null, { signal: abortController.current.signal });
-      } catch (e) {
-         if (e.message === 'AbortError') return;
-         notify('oopsie-daisy! something went wrong..', notificationTypes.error);
-      }
-   };
-
    const renderResult = useCallback(
       ({ item, section }) => {
          const type = section?.key || selectedPill.label.toLowerCase();
@@ -126,8 +113,7 @@ const SearchScreen = () => {
             case 'users':
                return <UserItem item={item} onAdd={() => {}} onGeneralPress={() => {}} />;
             case 'tracks':
-               const isPlaying = currentTrackId === item.id;
-               return <TrackItem item={item} onMore={() => {}} onGeneralPress={handleTrackPress} isPlaying={isPlaying} />;
+               return <TrackItem item={item} onMore={() => {}} onGeneralPress={handlePlay} />;
             case 'playlists':
                return <PlaylistItem item={item} onMore={() => {}} onGeneralPress={() => {}} />;
             case 'albums':
@@ -136,7 +122,7 @@ const SearchScreen = () => {
                return null;
          }
       },
-      [selectedPill, currentTrackId]
+      [selectedPill]
    );
 
    const renderEmptyResults = useCallback(() => {
