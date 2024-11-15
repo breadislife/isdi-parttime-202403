@@ -2,12 +2,14 @@ import { trigger } from 'react-native-haptic-feedback';
 import { usePlaybackState, useProgress, State, RepeatMode } from 'react-native-track-player';
 import useNotification from './useNotification';
 import usePlayer from './usePlayer';
+import { useTrackStore } from '../store/track';
 
 const usePlayerHandlers = () => {
    const { state: playbackState } = usePlaybackState();
    const { position, duration } = useProgress();
    const { notify, notificationTypes } = useNotification();
    const { play, seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode } = usePlayer();
+   const { setPlayRequest } = useTrackStore();
 
    const handlePlayPause = async () => {
       trigger('impactLight');
@@ -84,7 +86,10 @@ const usePlayerHandlers = () => {
 
    const handlePlay = async track => {
       try {
-         await play(track);
+         const requestId = Date.now();
+         setPlayRequest(requestId);
+
+         await play(track, null, requestId);
       } catch (e) {
          if (e.message === 'AbortError') return;
          notify('oopsie-daisy! something went wrong..', notificationTypes.error);

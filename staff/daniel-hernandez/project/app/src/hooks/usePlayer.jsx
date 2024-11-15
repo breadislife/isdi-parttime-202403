@@ -78,9 +78,9 @@ const usePlayer = () => {
       }
    }, []);
 
-   const play = useCallback(async (item, range = null) => {
+   const play = useCallback(async (item, range = null, requestId) => {
       try {
-         await TrackPlayer.stop();
+         if (useTrackStore.getState().playRequest !== requestId) return;
 
          // Set new current track id
          setCurrentTrackId(item.id);
@@ -89,8 +89,9 @@ const usePlayer = () => {
          abortCurrentAbortController();
          createNewAbortController();
 
-         const [_, info] = await Promise.all([TrackPlayer.reset(), services.player(item.id, { signal: abortController?.signal })]);
+         const info = await services.player(item.id, { signal: abortController?.signal });
 
+         if (useTrackStore.getState().playRequest !== requestId) return;
          await TrackPlayer.load({
             id: item.id,
             url: info.url,
@@ -109,6 +110,7 @@ const usePlayer = () => {
             headers: { Authorization: `Bearer ${info.token}`, ...(range && { Range: range }) }
          });
 
+         if (useTrackStore.getState().playRequest !== requestId) return;
          await TrackPlayer.play();
       } catch (error) {
          if (abortController?.signal?.aborted) throw new Error('AbortError');
