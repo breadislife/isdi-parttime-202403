@@ -3,11 +3,13 @@ import logRouter from './logs.js';
 import queryRouter from './queries.js';
 import streamRouter from './stream.js';
 import playerRouter from './player.js';
+import userRouter from './user.js';
 
 export default {
    authRouter,
    logRouter,
    queryRouter,
    streamRouter,
-   playerRouter
+   playerRouter,
+   userRouter
 };

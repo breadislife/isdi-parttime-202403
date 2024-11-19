@@ -8,6 +8,8 @@ import queryHandler from './query.js';
 import streamHandler from './stream.js';
 import playerHandler from './player.js';
 
+import followUserHandler from './user/followUser.js';
+
 export default {
    loginHandler,
    registerHandler,
@@ -17,5 +19,7 @@ export default {
    queryHandler,
 
    streamHandler,
-   playerHandler
+   playerHandler,
+
+   followUserHandler
 };
