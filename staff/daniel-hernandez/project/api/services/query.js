@@ -92,6 +92,7 @@ const query = (userId, query, types = [], limit = constants.DEFAULT_LIMIT, page 
                           username: 1,
                           profileImage: 1,
                           followers: '$followersCount',
+                          isFollowed: { $in: [user._id, '$followers'] }, // Bool to determine if the user is followed by the current user
                           relevance: 1 // Include relevance score in the results
                        }
                     }

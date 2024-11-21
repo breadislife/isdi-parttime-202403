@@ -19,10 +19,10 @@ const UserItem = ({ item, onAdd, onGeneralPress }) => (
          className="self-center h-5 w-5 ml-2"
          onPress={event => {
             event.stopPropagation();
-            onAdd(item);
+            onAdd(item.id);
          }}
       >
-         <Image source={ItemIcons.addIcon} className="self-center h-4 w-4 my-auto" resizeMode="contain" />
+         <Image source={item.isFollowed ? ItemIcons.checkIcon : ItemIcons.addIcon} className="self-center h-4 w-4 my-auto" resizeMode="contain" />
       </Pressable>
    </Pressable>
 );

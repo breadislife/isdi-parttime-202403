@@ -3,12 +3,14 @@ import { useTrackStore } from '../../store/track';
 import SpinningLoader from '../loaders/SpinningLoader';
 import { ItemIcons } from '../../../assets/images/icons';
 import formatSeconds from '../../utils/formatSeconds';
+import usePlayerHandlers from '../../hooks/usePlayerHandlers';
 
-const TrackItem = ({ item, onMore, onGeneralPress }) => {
+const TrackItem = ({ item, onMore }) => {
    const { currentTrackId } = useTrackStore();
+   const { handlePlay } = usePlayerHandlers();
 
    return (
-      <Pressable key={item?.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => onGeneralPress(item)}>
+      <Pressable key={item?.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => handlePlay(item)}>
          <View className="w-16 h-16 rounded-sm mr-3 justify-center">
             {currentTrackId === item?.id && <SpinningLoader className="absolute" tintColor="#E36526" />}
 

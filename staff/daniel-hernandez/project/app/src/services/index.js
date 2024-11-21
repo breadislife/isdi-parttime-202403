@@ -9,7 +9,9 @@ import { storage } from './storage.js';
 import { playback } from './playback';
 import player from './player.js';
 
-export { signIn, signUp, signOut, checkEmail, search, storage, playback, player };
+import followUser from './user/followUser.js';
+
+export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser };
 
 export default {
    signIn,
@@ -19,5 +21,6 @@ export default {
    search,
    storage,
    playback,
-   player
+   player,
+   followUser
 };

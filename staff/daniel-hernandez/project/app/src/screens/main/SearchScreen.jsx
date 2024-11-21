@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Image, Text, SectionList, FlatList } from 'react-native';
 import useNotification from '../../hooks/useNotification';
-import usePlayerHandlers from '../../hooks/usePlayerHandlers';
 import { useTrackStore } from '../../store/track';
 import { UserItem, TrackItem, PlaylistItem, AlbumItem } from '../../components/items';
 import SpinningLoader from '../../components/loaders/SpinningLoader';
@@ -17,7 +16,6 @@ const DEFAULT_PILL = { label: 'All', queryType: [...constants.queryTypes], limit
 // TODO: refactor and componentize
 const SearchScreen = () => {
    const { notify, notificationTypes } = useNotification();
-   const { handlePlay } = usePlayerHandlers();
    const { currentTrackId } = useTrackStore();
 
    const [query, setQuery] = useState('');
@@ -105,15 +103,59 @@ const SearchScreen = () => {
       }
    };
 
+   const handleFollowUser = async id => {
+      setResults(pR => {
+         const updatedResults = { ...pR };
+         if (updatedResults.users) {
+            updatedResults.users = updatedResults.users.map(user => {
+               if (user.id === id) {
+                  const following = user.isFollowed;
+                  return {
+                     ...user,
+                     isFollowed: !following,
+                     followers: following ? parseInt(user.followers) - 1 : parseInt(user.followers) + 1
+                  };
+               }
+               return user;
+            });
+         }
+         return updatedResults;
+      });
+
+      try {
+         await services.followUser(id);
+      } catch {
+         notify('Something went wrong..', notificationTypes.error);
+
+         setResults(pR => {
+            const revertedResults = { ...pR };
+            if (revertedResults.users) {
+               revertedResults.users = revertedResults.users.map(user => {
+                  if (user.id === id) {
+                     const followed = !user.isFollowed;
+                     return {
+                        ...user,
+                        isFollowed: followed,
+                        followers: followed ? parseInt(user.followers) + 1 : parseInt(user.followers) - 1
+                     };
+                  }
+                  return user;
+               });
+            }
+            return revertedResults;
+         });
+      }
+   };
+
    const renderResult = useCallback(
       ({ item, section }) => {
          const type = section?.key || selectedPill.label.toLowerCase();
 
          switch (type) {
             case 'users':
-               return <UserItem item={item} onAdd={() => {}} onGeneralPress={() => {}} />;
+               return <UserItem item={item} onAdd={handleFollowUser} onGeneralPress={() => {}} />;
             case 'tracks':
-               return <TrackItem item={item} onMore={() => {}} onGeneralPress={handlePlay} />;
+               return <TrackItem item={item} onMore={() => {}} />;
             case 'playlists':
                return <PlaylistItem item={item} onMore={() => {}} onGeneralPress={() => {}} />;
             case 'albums':
