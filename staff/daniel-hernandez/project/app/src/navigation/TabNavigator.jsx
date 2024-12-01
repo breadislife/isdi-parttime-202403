@@ -3,8 +3,8 @@ import { Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { TabIcons } from '../../assets/images/icons';
 import { HomeScreen, SearchScreen, LibraryScreen } from '../screens';
-import Header from '../components/Header';
 import FloatingPlayer from '../components/FloatingPlayer';
+import BaseStack from './BaseStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -12,11 +12,8 @@ const TabNavigator = () => (
    <>
       <FloatingPlayer />
       <Tab.Navigator
-         screenOptions={({ route, navigation }) => ({
-            header: () => <Header title={route.name === 'HomeTab' ? 'こんにちは, User.' : route.name === 'SearchTab' ? 'Search.' : route.name === 'LibraryTab' ? 'Library.' : ''} navigation={navigation} />,
-            headerStyle: { backgroundColor: '#1B1A1A' },
-            headerTintColor: '#ECE3DC',
-            headerShadowVisible: false,
+         screenOptions={({ route }) => ({
+            headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
                let iconSource;
                if (route.name === 'HomeTab') {
@@ -36,9 +33,9 @@ const TabNavigator = () => (
             tabBarBackground: () => <BlurView tint="dark" intensity={95} className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden rounded-r-xl rounded-l-xl" />
          })}
       >
-         <Tab.Screen name="HomeTab" component={HomeScreen} />
-         <Tab.Screen name="SearchTab" component={SearchScreen} />
-         <Tab.Screen name="LibraryTab" component={LibraryScreen} />
+         <Tab.Screen name="HomeTab">{() => <BaseStack name="HomeScreen" component={HomeScreen} title="こんにちは, User." />}</Tab.Screen>
+         <Tab.Screen name="SearchTab">{() => <BaseStack name="SearchScreen" component={SearchScreen} title="Search." />}</Tab.Screen>
+         <Tab.Screen name="LibraryTab">{() => <BaseStack name="LibraryScreen" component={LibraryScreen} title="Library." />}</Tab.Screen>
       </Tab.Navigator>
    </>
 );

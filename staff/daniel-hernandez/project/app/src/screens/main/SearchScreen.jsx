@@ -6,6 +6,7 @@ import { UserItem, TrackItem, PlaylistItem, AlbumItem } from '../../components/i
 import SpinningLoader from '../../components/loaders/SpinningLoader';
 import SlidingTextInputWithCancel from '../../components/inputs/SlidingTextInputWithCancel';
 import PillBar from '../../components/PillBar';
+import { trigger } from 'react-native-haptic-feedback';
 import services from '../../services';
 import constants from 'com/constants';
 
@@ -46,6 +47,7 @@ const SearchScreen = () => {
       setHasMore(true);
    };
 
+   // TODO: fade in results along with the pillbar when results are obtained
    const handleSearch = async (pageNum = 1) => {
       if (!query.trim()) return;
 
@@ -104,6 +106,7 @@ const SearchScreen = () => {
    };
 
    const handleFollowUser = async id => {
+      trigger('impactMedium');
       setResults(pR => {
          const updatedResults = { ...pR };
          if (updatedResults.users) {
@@ -153,7 +156,7 @@ const SearchScreen = () => {
 
          switch (type) {
             case 'users':
-               return <UserItem item={item} onAdd={handleFollowUser} onGeneralPress={() => {}} />;
+               return <UserItem item={item} onAdd={handleFollowUser} />;
             case 'tracks':
                return <TrackItem item={item} onMore={() => {}} />;
             case 'playlists':

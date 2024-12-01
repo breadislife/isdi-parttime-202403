@@ -11,13 +11,13 @@ const StackNavigator = () => {
 
    return (
       <Stack.Navigator
-         screenOptions={({ navigation }) => ({
+         screenOptions={{
             headerStyle: { backgroundColor: '#1B1A1A' },
             headerShadowVisible: false,
-            headerLeft: () => <BackButton navigation={navigation} />,
+            headerLeft: () => <BackButton />,
             animation: 'fade',
             animationDuration: 200
-         })}
+         }}
       >
          {isLoading ? (
             // isLoading ? Show loading screen : Check for user token && do other things..

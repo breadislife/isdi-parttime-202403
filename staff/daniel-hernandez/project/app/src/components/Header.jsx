@@ -1,10 +1,12 @@
 import { View, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 // TODO: Componentize
 // TODO: Header ellipse color and letter should be dynamic
-const Header = ({ title, navigation }) => {
+const Header = ({ title }) => {
    const insets = useSafeAreaInsets();
+   const navigation = useNavigation();
 
    return (
       <View className="bg-palette-90 w-[100%] z-50" style={{ paddingTop: insets.top - 5, paddingBottom: insets.bottom - 35, paddingLeft: insets.left, paddingRight: insets.right }}>
