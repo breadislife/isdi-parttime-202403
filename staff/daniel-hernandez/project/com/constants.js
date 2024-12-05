@@ -41,6 +41,7 @@ const VIEWED_USER_LIKED_TRACKS = 'viewed_user_liked_tracks';
 const VIEWED_USER_CREATED_PLAYLISTS = 'viewed_user_created_playlists';
 const VIEWED_USER_CREATED_TRACKS = 'viewed_user_created_tracks';
 const VIEWED_USER_CREATED_ALBUMS = 'viewed_user_created_albums';
+const VIEWED_USER_PROFILE = 'viewed_user_profile';
 
 export default {
    types,
@@ -85,5 +86,6 @@ export default {
    VIEWED_USER_LIKED_TRACKS,
    VIEWED_USER_CREATED_PLAYLISTS,
    VIEWED_USER_CREATED_TRACKS,
-   VIEWED_USER_CREATED_ALBUMS
+   VIEWED_USER_CREATED_ALBUMS,
+   VIEWED_USER_PROFILE
 };

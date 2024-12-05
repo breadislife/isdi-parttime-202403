@@ -51,14 +51,15 @@ const LogSchema = new Schema(
             constants.VIEWED_USER_LIKED_TRACKS,
             constants.VIEWED_USER_CREATED_PLAYLISTS,
             constants.VIEWED_USER_CREATED_TRACKS,
-            constants.VIEWED_USER_CREATED_ALBUMS
+            constants.VIEWED_USER_CREATED_ALBUMS,
+            constants.VIEWED_USER_PROFILE
          ]
       },
       targetUser: {
          type: ObjectId,
          ref: 'User',
          required: function () {
-            return [constants.FOLLOWED_USER, constants.UNFOLLOWED_USER].includes(this.type);
+            return [constants.FOLLOWED_USER, constants.UNFOLLOWED_USER, constants.VIEWED_USER_PROFILE].includes(this.type);
          }
       },
       track: {

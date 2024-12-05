@@ -79,7 +79,8 @@ function validateLogType(type) {
       constants.VIEWED_USER_LIKED_TRACKS,
       constants.VIEWED_USER_CREATED_PLAYLISTS,
       constants.VIEWED_USER_CREATED_TRACKS,
-      constants.VIEWED_USER_CREATED_ALBUMS
+      constants.VIEWED_USER_CREATED_ALBUMS,
+      constants.VIEWED_USER_PROFILE
    ];
 
    if (!validTypes.includes(type)) {
