@@ -12,6 +12,7 @@ const LogSchema = new Schema(
       type: {
          type: String,
          required: true,
+         index: true,
          enum: [
             constants.LOGGED_IN,
             constants.LOGGED_OUT,
@@ -82,7 +83,8 @@ const LogSchema = new Schema(
                constants.DOWNLOADED_TRACK,
                constants.SHARED_TRACK
             ].includes(this.type);
-         }
+         },
+         index: true
       },
       playlist: {
          type: ObjectId,
