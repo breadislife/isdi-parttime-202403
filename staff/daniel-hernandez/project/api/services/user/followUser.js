@@ -1,5 +1,5 @@
 import { User } from '../../data/index.js';
-import { CredentialError, NotFoundError, SystemError } from 'com/errors.js';
+import { CredentialError, InvalidArgumentError, NotFoundError, SystemError } from 'com/errors.js';
 import validate from 'com/validation.js';
 import constants from 'com/constants.js';
 import log from '../log.js';
@@ -30,6 +30,10 @@ const followUser = (userId, targetUserId) => {
 
       if (!targetUser) {
          throw new NotFoundError("Target user doesn't exist");
+      }
+
+      if (user._id.toString() === targetUser._id.toString()) {
+         throw new InvalidArgumentError('You cannot follow yourself !');
       }
 
       const following = targetUser.followers.some(followerId => followerId.toString() === userId);

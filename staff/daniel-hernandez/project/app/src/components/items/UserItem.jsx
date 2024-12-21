@@ -1,9 +1,22 @@
 import { View, Image, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ItemIcons } from '../../../assets/images/icons';
+import { useAuthStore } from '../../store/auth';
+import useNotification from '../../hooks/useNotification';
+import extractPayload from '../../utils/extractPayload';
 
 const UserItem = ({ item, onAdd }) => {
    const navigation = useNavigation();
+   const { userToken } = useAuthStore();
+   const { notify, notificationTypes } = useNotification();
+   let currentUserId;
+
+   try {
+      const { sub } = extractPayload(userToken);
+      currentUserId = sub;
+   } catch {
+      notify("well.. that's not supposed to happen", notificationTypes.error);
+   }
 
    return (
       <Pressable key={item.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => navigation?.navigate('UserScreen', { userId: item.id })}>
@@ -19,15 +32,17 @@ const UserItem = ({ item, onAdd }) => {
             </Text>
          </View>
 
-         <Pressable
-            className="self-center h-5 w-5 ml-2"
-            onPress={event => {
-               event.stopPropagation();
-               onAdd(item.id);
-            }}
-         >
-            <Image source={item.isFollowed ? ItemIcons.checkIcon : ItemIcons.addIcon} className="self-center h-4 w-4 my-auto" resizeMode="contain" />
-         </Pressable>
+         {item.id !== currentUserId && (
+            <Pressable
+               className="self-center h-5 w-5 ml-2"
+               onPress={event => {
+                  event.stopPropagation();
+                  onAdd(item.id);
+               }}
+            >
+               <Image source={item.isFollowed ? ItemIcons.checkIcon : ItemIcons.addIcon} className="self-center h-4 w-4 my-auto" resizeMode="contain" />
+            </Pressable>
+         )}
       </Pressable>
    );
 };

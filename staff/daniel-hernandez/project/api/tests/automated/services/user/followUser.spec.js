@@ -66,6 +66,13 @@ describe('followUser', () => {
       await expect(followUser(user1.id, '66b2cebc5621e4111875102c')).to.be.rejectedWith(NotFoundError, "Target user doesn't exist");
    });
 
+   it('fails when the user tries to follow themselves', async () => {
+      const hash = await bcrypt.hash('Neon-Genesis02', 8);
+      const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash });
+
+      await expect(followUser(user.id, user.id)).to.be.rejectedWith(InvalidArgumentError, 'You cannot follow yourself !');
+   });
+
    it('fails with SystemError on database failure during user search', async () => {
       const hash = await bcrypt.hash('Neon-Genesis02', 8);
       const [user1, user2] = await Promise.all([User.create({ username: 'eva01', email: 'shinji@ikari.com', passwordHash: hash }), User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash })]);
