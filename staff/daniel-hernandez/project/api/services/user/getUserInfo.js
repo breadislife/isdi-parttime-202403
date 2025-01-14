@@ -11,7 +11,7 @@ const getUserInfo = (userId, targetUserId) => {
    validate.objectId(targetUserId);
 
    return (async () => {
-      let user, targetUserInfo, popularTracks, recentTracks, albums, playlists;
+      let user, targetUser, targetUserInfo, popularTracks, recentTracks, albums, playlists;
 
       try {
          user = await User.findById(userId).lean();
@@ -24,49 +24,64 @@ const getUserInfo = (userId, targetUserId) => {
       }
 
       try {
-         targetUserInfo = await User.aggregate([{ $match: { _id: targetUserId } }, { $project: { username: 1, followers: { $size: '$followers' }, following: { $size: '$following' } } }]);
-      } catch (error) {
+         targetUser = await User.findById(targetUserId).lean();
+       } catch (error) {
          throw new SystemError(`Fetching user info failed: ${error.message}`);
       }
 
-      if (!targetUserInfo.length) {
+      if (!targetUser) {
          throw new NotFoundError("Target user doesn't exist");
       }
 
       try {
-         [popularTracks, recentTracks, albums, playlists] = await Promise.all([
+         [targetUserInfo, popularTracks, recentTracks, albums, playlists] = await Promise.all([
+            // Gets the target user info
+            User.aggregate([
+               { $match: { _id: targetUser._id } },
+               { $addFields: { followerCount: { $size: '$followers' }, followingCount: { $size: '$following' } } },
+               { $project: { username: 1, followers: '$followerCount', following: '$followingCount', isFollowed: { $in: [user._id, '$followers'] } } }
+            ]),
+
             // Gets popular tracks based on play logs
             Track.aggregate([
                { $lookup: { from: 'logs', localField: '_id', foreignField: 'track', pipeline: [{ $match: { type: constants.PLAYED_TRACK } }], as: 'trackLogs' } },
                { $unwind: { path: '$trackLogs' } },
-               { $group: { _id: '$_id', name: { $first: '$name' }, artists: { $first: '$artists' }, plays: { $sum: 1 }, duration: { $first: '$duration' }, coverArt: { $first: '$coverArt' }, album: { $first: '$album' } } },
+               { $group: { _id: '$_id', plays: { $sum: 1 }, name: { $first: '$name' }, artists: { $first: '$artists' }, duration: { $first: '$duration' }, coverArt: { $first: '$coverArt' }, album: { $first: '$album' } } },
                { $sort: { plays: -1 } },
                { $limit: 10 },
-               { $project: { name: 1, artists: { $map: { input: '$artists', as: 'artist', in: { _id: '$$artist._id', name: '$$artist.name' } } }, plays: 1, duration: 1, coverArt: 1, album: { _id: 1, name: 1 } } }
+               { $lookup: { from: 'users', localField: 'artists', foreignField: '_id', as: 'artists' } },
+               { $lookup: { from: 'albums', localField: 'album', foreignField: '_id', as: 'album' } },
+               { $unwind: '$album' },
+               { $project: { name: 1, artists: { _id: 1, username: 1 }, duration: 1, album: { _id: 1, name: 1 }, coverArt: 1, plays: 1 } }
             ]),
 
             // Gets recent tracks added or performed by the target user
             Track.aggregate([
-               { $match: { $or: [{ addedBy: targetUserId },
-               { artists: targetUserId }] } },
+               { $match: { $or: [{ addedBy: targetUser._id }, { artists: { $in: [targetUser._id] } }] } },
+               { $lookup: { from: 'users', localField: 'artists', foreignField: '_id', as: 'artists' } },
+               { $lookup: { from: 'albums', localField: 'album', foreignField: '_id', as: 'album' } },
+               { $unwind: '$album' },
                { $sort: { createdAt: -1 } },
                { $limit: 5 },
-               { $project: { name: 1, artists: { _id: 1, name: 1 }, duration: 1, album: { _id: 1, name: 1 }, coverArt: 1 } }
+               { $project: { name: 1, artists: { _id: 1, username: 1 }, duration: 1, album: { _id: 1, name: 1 }, coverArt: 1 } }
             ]),
 
-            // Gets albums created by the target user
+            // Gets albums with the target user in artists
             Album.aggregate([
-               { $match: { artists: targetUserId } },
+               { $match: { $or: [{ artists: targetUser._id }, { 'artists._id': targetUser._id }] } },
+               { $lookup: { from: 'users', localField: 'artists', foreignField: '_id', as: 'artists' } },
                { $limit: 10 },
                { $project: { name: 1, artists: { _id: 1, username: 1 }, coverArt: 1 } }
             ]),
 
-            // Gets the playlists owned by the target user
+            // Gets the playlists owned by the target user that are public
             Playlist.aggregate([
-               { $match: { owner: targetUserId, public: true } },
+               { $match: { $and: [{ public: true }, { owner: targetUser._id }] } },
                { $lookup: { from: 'tracks', localField: 'tracks', foreignField: '_id', as: 'trackDetails' } },
                { $addFields: { duration: { $sum: '$trackDetails.duration' }, trackCount: { $size: '$tracks' } } },
-               { $sort: { followers: -1 } },
+               { $lookup: { from: 'users', localField: 'owner', foreignField: '_id', as: 'owner' } },
+               { $unwind: '$owner' },
+               { $sort: { followers: -1, name: 1 } },
                { $limit: 10 },
                { $project: { name: 1, owner: { _id: 1, username: 1 }, coverArt: 1, followers: 1, tracks: '$trackCount', duration: 1 } }
             ])
@@ -88,7 +103,7 @@ const getUserInfo = (userId, targetUserId) => {
       }
 
       return {
-         ...targetUserInfo,
+         ...targetUserInfo[0],
          tracks: {
             popular: popularTracks,
             recent: recentTracks

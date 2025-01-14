@@ -6,7 +6,6 @@ import chaiAsPromised from 'chai-as-promised';
 import { Log, User } from '../../../../data/index.js';
 import { CredentialError, InvalidArgumentError, SystemError } from 'com/errors.js';
 import login from '../../../../services/auth/login.js';
-import log from '../../../../services/log.js';
 import constants from 'com/constants.js';
 
 const { MONGO_TEST_URI } = process.env;
