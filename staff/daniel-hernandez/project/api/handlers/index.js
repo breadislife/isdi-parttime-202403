@@ -9,6 +9,7 @@ import streamHandler from './stream.js';
 import playerHandler from './player.js';
 
 import followUserHandler from './user/followUser.js';
+import getUserInfoHandler from './user/getUserInfo.js';
 
 export default {
    loginHandler,
@@ -21,5 +22,6 @@ export default {
    streamHandler,
    playerHandler,
 
-   followUserHandler
+   followUserHandler,
+   getUserInfoHandler
 };
