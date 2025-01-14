@@ -6,6 +6,7 @@ import stream from './stream.js';
 import query from './query.js';
 import player from './player.js';
 import followUser from './user/followUser.js';
+import getUserInfo from './user/getUserInfo.js';
 
 export default {
    login,
@@ -15,5 +16,6 @@ export default {
    stream,
    query,
    player,
-   followUser
+   followUser,
+   getUserInfo
 };
