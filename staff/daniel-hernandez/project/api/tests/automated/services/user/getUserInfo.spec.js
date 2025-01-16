@@ -50,6 +50,7 @@ describe('getUserInfo', () => {
       expect(userInfo).to.have.property('following').that.equals(user2.following.length.toString());
       expect(userInfo).to.have.property('isFollowed').that.equals(user2.followers.includes(user1._id));
       expect(userInfo).to.have.property('id').that.equals(user2.id);
+      expect(userInfo).to.have.property('profileImage').that.equals(user2.profileImage);
 
       expect(userInfo).to.have.nested.property('tracks.popular').that.is.an('array').with.lengthOf(2);
       expect(userInfo.tracks.popular[0]).to.include({ name: 'Track 2', duration: '180', plays: '2', id: track2.id, coverArt: '' });
@@ -111,6 +112,7 @@ describe('getUserInfo', () => {
       expect(userInfo).to.have.property('following').that.equals(user2.following.length.toString());
       expect(userInfo).to.have.property('isFollowed').that.equals(user2.followers.includes(user1._id));
       expect(userInfo).to.have.property('id').that.equals(user2.id);
+      expect(userInfo).to.have.property('profileImage').that.equals(user2.profileImage);
 
       expect(userInfo).to.have.property('playlists').that.is.an('array').with.lengthOf(0);
       expect(userInfo).to.have.property('albums').that.is.an('array').with.lengthOf(0);

@@ -39,7 +39,7 @@ const getUserInfo = (userId, targetUserId) => {
             User.aggregate([
                { $match: { _id: targetUser._id } },
                { $addFields: { followerCount: { $size: '$followers' }, followingCount: { $size: '$following' } } },
-               { $project: { username: 1, followers: '$followerCount', following: '$followingCount', isFollowed: { $in: [user._id, '$followers'] } } }
+               { $project: { username: 1, followers: '$followerCount', following: '$followingCount', isFollowed: { $in: [user._id, '$followers'] }, profileImage: 1 } }
             ]),
 
             // Gets popular tracks based on play logs
