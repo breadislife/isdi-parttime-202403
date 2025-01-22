@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import useNotification from '../hooks/useNotification';
 import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
+import ProfileHeader from '../components/ProfileHeader';
 import services from '../services';
 
 const UserScreen = ({ route }) => {
@@ -35,10 +36,7 @@ const UserScreen = ({ route }) => {
       <View className="flex-1 bg-palette-90">
          {!loading && userInfo && (
             <View className="top-0 items-center">
-               <Text className="font-monaspace text-palette-40 text-[15px] my-1.5">/* user profile */</Text>
-               <ScrollView className="w-full px-4" contentContainerStyle={{ paddingBottom: 210 }}>
-                  <Text className="font-monaspace text-palette-40 text-[10px] leading-normal">{JSON.stringify(userInfo, null, 2)}</Text>
-               </ScrollView>
+               <ProfileHeader item={userInfo} />
             </View>
          )}
 
