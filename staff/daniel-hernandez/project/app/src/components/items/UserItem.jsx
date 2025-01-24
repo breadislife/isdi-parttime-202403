@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { View, Image, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ItemIcons } from '../../../assets/images/icons';
@@ -9,14 +10,16 @@ const UserItem = ({ item, onAdd }) => {
    const navigation = useNavigation();
    const { userToken } = useAuthStore();
    const { notify, notificationTypes } = useNotification();
-   let currentUserId;
+   const [currentUserId, setCurrentUserId] = useState(null);
 
-   try {
-      const { sub } = extractPayload(userToken);
-      currentUserId = sub;
-   } catch {
-      notify("well.. that's not supposed to happen", notificationTypes.error);
-   }
+   useEffect(() => {
+      try {
+         const { sub } = extractPayload(userToken);
+         setCurrentUserId(sub);
+      } catch {
+         notify("well.. that's not supposed to happen", notificationTypes.error);
+      }
+   }, [userToken]);
 
    return (
       <Pressable key={item.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => navigation?.navigate('UserScreen', { userId: item.id })}>
