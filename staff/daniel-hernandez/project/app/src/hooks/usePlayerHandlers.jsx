@@ -9,7 +9,6 @@ const usePlayerHandlers = () => {
    const { position, duration } = useProgress();
    const { notify, notificationTypes } = useNotification();
    const { play, seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode } = usePlayer();
-   const { setPlayRequest } = useTrackStore();
 
    const handlePlayPause = async () => {
       trigger('impactLight');
@@ -87,7 +86,9 @@ const usePlayerHandlers = () => {
    const handlePlay = async track => {
       try {
          const requestId = Date.now();
-         setPlayRequest(requestId);
+
+         // Set the id immediately
+         useTrackStore.setState({ playRequest: requestId });
 
          await play(track, null, requestId);
       } catch (e) {

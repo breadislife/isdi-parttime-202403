@@ -82,12 +82,12 @@ const usePlayer = () => {
       try {
          if (useTrackStore.getState().playRequest !== requestId) return;
 
-         // Set new current track id
-         setCurrentTrackId(item.id);
-
          // Abort previous controller and reset to a new one
          abortCurrentAbortController();
          createNewAbortController();
+
+         // Set new current track id
+         setCurrentTrackId(item.id);
 
          const info = await services.player(item.id, { signal: abortController?.signal });
 
