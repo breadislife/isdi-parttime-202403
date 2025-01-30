@@ -6,7 +6,7 @@
     "start": "expo start",
     "reset-cache": "npx react-native start --reset-cache",
     "ios": "expo run:ios",
-    "bundle": "npx react-native bundle --platform ios --dev false --entry-file main.jsx --bundle-output ios/bmp/Supporting/main.jsbundle --assets-dest ios/bmp",
+    "bundle": "npx react-native bundle --platform ios --dev false --entry-file main.jsx --bundle-output ios/bmp/main.jsbundle --assets-dest ios/bmp",
     "android": "expo run:android"
   },
   "dependencies": {
