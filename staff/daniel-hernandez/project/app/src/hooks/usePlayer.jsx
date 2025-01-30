@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import TrackPlayer, { Capability } from 'react-native-track-player';
 import { useAbortController, useControllerStore } from '../store/controller';
 import { useTrackStore } from '../store/track';
-import { SystemError } from 'com/errors';
+import { InvalidTokenError, SystemError, TokenExpiredError } from 'com/errors';
 import { storage } from '../services';
 import services from '../services';
 
@@ -19,28 +19,22 @@ const usePlayer = () => {
    const setup = useCallback(async () => {
       try {
          await TrackPlayer.setupPlayer();
-         TrackPlayer.updateOptions({
-            stopWithApp: true,
-            capabilities: [Capability.Play, Capability.Pause, Capability.Stop, Capability.SkipToNext, Capability.SkipToPrevious, Capability.SeekTo],
-            compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
-            progressUpdateEventInterval: 1
-         });
+         TrackPlayer.updateOptions({ stopWithApp: true, capabilities: [Capability.Play, Capability.Pause, Capability.Stop, Capability.SkipToNext, Capability.SkipToPrevious, Capability.SeekTo], compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext], progressUpdateEventInterval: 1 });
 
          const stringifiedTrack = storage.getString(Config.CURRENT_TRACK_KEY);
          const progress = storage.getNumber(Config.TRACK_PROGRESS_KEY);
+
          if (stringifiedTrack) {
             let track, info;
+
             try {
                track = JSON.parse(stringifiedTrack);
-            } catch (error) {
-               console.error(`Failed to parse stringified track: ${error.message}`);
-               return;
-            }
+            } catch { return; }
 
             try {
                info = await services.player(track.id);
             } catch (error) {
-               console.error(`Failed to get player info: ${error.message}`);
+               if (error instanceof TokenExpiredError || error instanceof InvalidTokenError) throw error;
                return;
             }
 
@@ -59,24 +53,19 @@ const usePlayer = () => {
                   artwork: track.artwork || require('../../assets/images/extras/unknown.png'),
                   headers: { Authorization: `Bearer ${info.token}` }
                });
-            } catch (error) {
-               console.error(`Failed to load track: ${error.message}`);
-               return;
-            }
+            } catch { return; }
 
             if (progress) {
                try {
                   await TrackPlayer.seekTo(progress);
-               } catch (error) {
-                  console.error(`Failed to seek to saved position: ${error.message}`);
-                  return;
-               }
+               } catch { return; }
             }
          }
       } catch (error) {
+         if (error instanceof TokenExpiredError || error instanceof InvalidTokenError) throw error;
          throw new SystemError(`Failed to setup player: ${error.message}`);
       }
-   }, []);
+   }, [setCurrentTrackId]);
 
    const play = useCallback(async (item, range = null, requestId) => {
       try {

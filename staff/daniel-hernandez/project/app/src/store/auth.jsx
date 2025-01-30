@@ -9,8 +9,8 @@ export const useAuthStore = create(set => ({
    setRestoreToken: token => set({ userToken: token, isLoading: false }),
 
    // Sets signin state
-   setSignIn: token => set({ isSignout: false, userToken: token }),
+   setSignIn: token => set({ isSignout: false, userToken: token, isLoading: false }),
 
    // Sets signout state
-   setSignOut: () => set({ isSignout: true, userToken: null })
+   setSignOut: () => set({ isSignout: true, userToken: null, isLoading: false })
 }));

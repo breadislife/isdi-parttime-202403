@@ -43,27 +43,20 @@ export const playback = () => {
 
       if (event.track) {
          let track;
+
          try {
             track = JSON.stringify(event.track);
-         } catch (error) {
-            console.error(`Failed to stringify current track: ${error.message}`);
-         }
+         } catch {}
 
          try {
             if (track) {
                storage.set(Config.CURRENT_TRACK_KEY, track);
             }
-         } catch (error) {
-            console.error(`Failed to save current track: ${error.message}`);
-         }
+         } catch {}
       }
    });
 
    TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, event => {
       storage.set(Config.TRACK_PROGRESS_KEY, event.position);
-   });
-
-   TrackPlayer.addEventListener(Event.PlaybackError, event => {
-      console.error('PLAYBACK ERROR:', event);
    });
 };
