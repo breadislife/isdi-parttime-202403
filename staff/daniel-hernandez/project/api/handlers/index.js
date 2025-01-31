@@ -11,6 +11,8 @@ import playerHandler from './player.js';
 import followUserHandler from './user/followUser.js';
 import getUserInfoHandler from './user/getUserInfo.js';
 
+import getPlaylistInfoHandler from './playlist/getPlaylistInfo.js';
+
 export default {
    loginHandler,
    registerHandler,
@@ -23,5 +25,7 @@ export default {
    playerHandler,
 
    followUserHandler,
-   getUserInfoHandler
+   getUserInfoHandler,
+
+   getPlaylistInfoHandler
 };

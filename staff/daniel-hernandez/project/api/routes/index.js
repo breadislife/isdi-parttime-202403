@@ -4,6 +4,7 @@ import queryRouter from './queries.js';
 import streamRouter from './stream.js';
 import playerRouter from './player.js';
 import userRouter from './user.js';
+import playlistRouter from './playlist.js';
 
 export default {
    authRouter,
@@ -11,5 +12,6 @@ export default {
    queryRouter,
    streamRouter,
    playerRouter,
-   userRouter
+   userRouter,
+   playlistRouter
 };

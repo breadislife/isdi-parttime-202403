@@ -16,6 +16,7 @@ api.use('/api/v1/search', verifyToken, routes.queryRouter);
 api.use('/api/v1/stream', verifyToken, routes.streamRouter);
 api.use('/api/v1/player', verifyToken, routes.playerRouter);
 api.use('/api/v1/user', verifyToken, routes.userRouter);
+api.use('/api/v1/playlist', verifyToken, routes.playlistRouter);
 
 api.use(notFound);
 api.use(errorHandler);
