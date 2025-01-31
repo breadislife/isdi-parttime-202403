@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Image, Text, SectionList, FlatList } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import useNotification from '../../hooks/useNotification';
 import { useTrackStore } from '../../store/track';
 import { UserItem, TrackItem, PlaylistItem, AlbumItem } from '../../components/items';
@@ -15,12 +16,13 @@ import { TabIcons } from '../../../assets/images/icons';
 const DEFAULT_PILL = { label: 'All', queryType: [...constants.queryTypes], limit: 8 };
 
 // TODO: refactor and componentize
+// TODO: add caching to results
 const SearchScreen = () => {
    const { notify, notificationTypes } = useNotification();
    const { currentTrackId } = useTrackStore();
 
    const [query, setQuery] = useState('');
-   const [status, setStatus] = useState({ loading: false, queryDone: false });
+   const [status, setStatus] = useState({ loading: false, queryDone: false }); // TODO: add skeleton loader for a nicer experience when loading
    const [selectedPill, setSelectedPill] = useState(DEFAULT_PILL);
    const [results, setResults] = useState({});
    const [shouldSearch, setShouldSearch] = useState(false);
@@ -29,12 +31,18 @@ const SearchScreen = () => {
    const [hasMore, setHasMore] = useState(true);
    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
+   const isFocused = useIsFocused();
+
    useEffect(() => {
       if (shouldSearch && query.trim()) {
          handleSearch();
          setShouldSearch(false);
       }
    }, [selectedPill, shouldSearch]);
+
+   useEffect(() => {
+      if (query.trim() && status.queryDone && isFocused) handleRefresh();
+   }, [isFocused]);
 
    const resetSearch = (resetQuery = false) => {
       if (resetQuery) setQuery('');
@@ -78,6 +86,24 @@ const SearchScreen = () => {
       } catch {
          notify('Something went wrong. Try again ?', notificationTypes.error);
          setStatus({ loading: false, queryDone: false });
+      }
+   };
+
+   // Only refresh users
+   const handleRefresh = async () => {
+      if (!query.trim()) return;
+
+      try {
+         const response = await services.search(query, [constants.queryTypes[0]], selectedPill.limit, page);
+
+         const updatedResults = { ...results };
+         if (response.users) updatedResults.users = response.users;
+
+         setResults(updatedResults);
+         setStatus({ loading: false, queryDone: true });
+      } catch {
+         notify('Failed to refresh info', notificationTypes.error);
+         setStatus({ loading: false, queryDone: true });
       }
    };
 

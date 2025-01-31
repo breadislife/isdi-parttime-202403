@@ -107,7 +107,8 @@ const usePlayer = () => {
          await TrackPlayer.play();
 
          // Set the new currentTrack id
-         useTrackStore.setState({ currentTrackId: item.id });
+         // NOTE: Using a callback to ensure synchronous state update
+         useTrackStore.setState(state => ({ ...state, currentTrackId: item.id }));
       } catch (error) {
          if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Player failed: ${error.message}`);

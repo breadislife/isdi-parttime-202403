@@ -4,7 +4,7 @@ import { useAuthStore } from '../store/auth';
 import useNotification from '../hooks/useNotification';
 import extractPayload from '../utils/extractPayload';
 
-const ProfileButtonSet = ({ onFollowPress, item }) => {
+const ProfileButtonSet = ({ item, onFollowPress }) => {
    const { userToken } = useAuthStore();
    const { notify, notificationTypes } = useNotification();
    const [currentUserId, setCurrentUserId] = useState(null);
