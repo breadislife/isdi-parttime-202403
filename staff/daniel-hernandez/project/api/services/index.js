@@ -7,6 +7,7 @@ import query from './query.js';
 import player from './player.js';
 import followUser from './user/followUser.js';
 import getUserInfo from './user/getUserInfo.js';
+import getPlaylistInfo from './playlist/getPlaylistInfo.js';
 
 export default {
    login,
@@ -17,5 +18,6 @@ export default {
    query,
    player,
    followUser,
-   getUserInfo
+   getUserInfo,
+   getPlaylistInfo
 };
