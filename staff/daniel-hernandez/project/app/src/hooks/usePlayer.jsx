@@ -104,11 +104,11 @@ const usePlayer = () => {
          // Final check of the requestId to ensure its validity
          if (useTrackStore.getState().playRequest !== requestId) return;
 
-         await TrackPlayer.play();
-
          // Set the new currentTrack id
          // NOTE: Using a callback to ensure synchronous state update
          useTrackStore.setState(state => ({ ...state, currentTrackId: item.id }));
+
+         await TrackPlayer.play();
       } catch (error) {
          if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Player failed: ${error.message}`);

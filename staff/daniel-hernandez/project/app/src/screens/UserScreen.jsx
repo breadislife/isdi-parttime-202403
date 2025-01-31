@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text } from 'react-native';
 import useNotification from '../hooks/useNotification';
 import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
 import ProfileHeader from '../components/ProfileHeader';
+import ProfileButtonSet from '../components/ProfileButtonSet';
+import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
 const UserScreen = ({ route }) => {
@@ -13,7 +15,11 @@ const UserScreen = ({ route }) => {
    const [loading, setLoading] = useState(true);
    const [userInfo, setUserInfo] = useState(null);
 
-   const getUserInfo = async () => {
+   useEffect(() => {
+      getUserInfo();
+   }, [userId]);
+
+   const getUserInfo = useCallback(async () => {
       try {
          setLoading(true);
 
@@ -25,11 +31,30 @@ const UserScreen = ({ route }) => {
       } finally {
          setLoading(false);
       }
-   };
+   }, [userId, notify]);
 
-   useEffect(() => {
-      getUserInfo();
-   }, [userId]);
+   const toggleFollowStatus = useCallback(prevInfo => {
+      const updatedInfo = { ...prevInfo };
+      const following = updatedInfo.isFollowed;
+
+      return {
+         ...updatedInfo,
+         isFollowed: !following,
+         followers: following ? parseInt(updatedInfo.followers) - 1 : parseInt(updatedInfo.followers) + 1
+      };
+   });
+
+   const handleFollowUser = async id => {
+      trigger('impactMedium');
+      setUserInfo(prevInfo => toggleFollowStatus(prevInfo));
+
+      try {
+         await services.followUser(id);
+      } catch {
+         notify('Something went wrong..', notificationTypes.error);
+         setUserInfo(prevInfo => toggleFollowStatus(prevInfo));
+      }
+   };
 
    // TODO: create a skeleton loader / placeholder ui of the user screen to display instead of just a spinning loader
    return (
@@ -37,6 +62,7 @@ const UserScreen = ({ route }) => {
          {!loading && userInfo && (
             <View className="top-0 items-center">
                <ProfileHeader item={userInfo} />
+               <ProfileButtonSet item={userInfo} onFollowPress={handleFollowUser} />
             </View>
          )}
 
