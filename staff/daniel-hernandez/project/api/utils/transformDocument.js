@@ -14,14 +14,17 @@ const transformDocument = obj => {
       }
 
       if (item && typeof item === 'object') {
-         if (item._id) {
-            item.id = item._id.toString();
-            delete item._id;
-         }
+         const transformedItem = {};
 
          for (const key in item) {
-            item[key] = transformNestedDocuments(item[key]);
+            if (key === '_id') {
+               transformedItem.id = item[key].toString();
+            } else {
+               transformedItem[key] = transformNestedDocuments(item[key]);
+            }
          }
+
+         return transformedItem;
       }
 
       return item;
