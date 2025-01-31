@@ -7,4 +7,6 @@ import ProfileTrackItem from './ProfileTrackItem';
 import ProfilePlaylistItem from './ProfilePlaylistItem';
 import ProfileAlbumItem from './ProfileAlbumItem';
 
-export { UserItem, TrackItem, PlaylistItem, AlbumItem, ProfileTrackItem, ProfilePlaylistItem, ProfileAlbumItem };
+import PlaylistTrackItem from './PlaylistTrackItem';
+
+export { UserItem, TrackItem, PlaylistItem, AlbumItem, ProfileTrackItem, ProfilePlaylistItem, ProfileAlbumItem, PlaylistTrackItem };
