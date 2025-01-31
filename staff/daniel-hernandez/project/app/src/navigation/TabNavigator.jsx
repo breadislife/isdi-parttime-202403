@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { TabIcons } from '../../assets/images/icons';
 import { HomeScreen, SearchScreen, LibraryScreen } from '../screens';
@@ -8,10 +8,17 @@ import BaseStack from './BaseStack';
 
 const Tab = createBottomTabNavigator();
 
+const HomeStack = () => <BaseStack name="HomeScreen" component={HomeScreen} title="こんにちは, User." />;
+const SearchStack = () => <BaseStack name="SearchScreen" component={SearchScreen} title="Search." />;
+const LibraryStack = () => <BaseStack name="LibraryScreen" component={LibraryScreen} title="Library." />;
+
 const TabNavigator = () => (
    <>
       <FloatingPlayer />
       <Tab.Navigator
+         lazy={true}
+         unmountOnBlur={true}
+         initialLayout={{ width: Dimensions.get('window').width }}
          screenOptions={({ route }) => ({
             headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
@@ -30,12 +37,13 @@ const TabNavigator = () => (
             tabBarInactiveTintColor: '#A0908A',
             tabBarShowLabel: false,
             tabBarStyle: { position: 'absolute', borderTopWidth: 0, borderTopColor: 'transparent', backgroundColor: 'transparent', height: 80 },
-            tabBarBackground: () => <BlurView tint="dark" intensity={95} className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden rounded-r-xl rounded-l-xl" />
+            tabBarBackground: () => <BlurView tint="dark" intensity={95} className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden rounded-r-xl rounded-l-xl" />,
+            contentStyle: { backgroundColor: '#1B1A1A' }
          })}
       >
-         <Tab.Screen name="HomeTab">{() => <BaseStack name="HomeScreen" component={HomeScreen} title="こんにちは, User." />}</Tab.Screen>
-         <Tab.Screen name="SearchTab">{() => <BaseStack name="SearchScreen" component={SearchScreen} title="Search." />}</Tab.Screen>
-         <Tab.Screen name="LibraryTab">{() => <BaseStack name="LibraryScreen" component={LibraryScreen} title="Library." />}</Tab.Screen>
+         <Tab.Screen name="HomeTab" component={HomeStack} />
+         <Tab.Screen name="SearchTab" component={SearchStack} />
+         <Tab.Screen name="LibraryTab" component={LibraryStack} />
       </Tab.Navigator>
    </>
 );

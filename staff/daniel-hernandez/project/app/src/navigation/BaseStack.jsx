@@ -10,7 +10,8 @@ const BaseStack = ({ name, component, title, options, props }) => (
       screenOptions={{
          headerStyle: { backgroundColor: '#1B1A1A' },
          headerTintColor: '#ECE3DC',
-         headerShadowVisible: false
+         headerShadowVisible: false,
+         contentStyle: { backgroundColor: '#1B1A1A' }
       }}
    >
       <Base.Screen name={name} component={component} options={{ ...options, header: () => <Header title={title} /> }} {...props} />
