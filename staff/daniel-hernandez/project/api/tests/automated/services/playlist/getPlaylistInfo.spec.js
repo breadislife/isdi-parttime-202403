@@ -46,7 +46,8 @@ describe('getPlaylistInfo', () => {
          public: true,
          owner: user._id,
          tracks: [track1._id, track2._id],
-         followers: 10
+         followers: 10,
+         coverArt: 'http'
       });
 
       const album = await Album.create({
@@ -68,6 +69,7 @@ describe('getPlaylistInfo', () => {
          name: playlist.name,
          description: playlist.description,
          public: playlist.public,
+         coverArt: playlist.coverArt,
          owner: {
             id: user._id.toString(),
             username: user.username,
