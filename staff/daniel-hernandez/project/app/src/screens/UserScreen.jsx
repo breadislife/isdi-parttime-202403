@@ -8,6 +8,7 @@ import ProfileHeader from '../components/ProfileHeader';
 import ProfileButtonSet from '../components/ProfileButtonSet';
 import ProfileTrackList from '../components/lists/ProfileTrackList';
 import ProfilePlaylistList from '../components/lists/ProfilePlaylistList';
+import ProfileAlbumList from '../components/lists/ProfileAlbumList';
 import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
@@ -69,6 +70,7 @@ const UserScreen = ({ route }) => {
                <ProfileButtonSet item={userInfo} onFollowPress={handleFollowUser} />
                <ProfileTrackList items={userInfo.tracks} />
                <ProfilePlaylistList items={userInfo.playlists} />
+               <ProfileAlbumList items={userInfo.albums} />
             </ScrollView>
          )}
 

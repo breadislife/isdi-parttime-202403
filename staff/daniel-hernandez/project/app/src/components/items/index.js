@@ -3,4 +3,8 @@ import TrackItem from './TrackItem';
 import PlaylistItem from './PlaylistItem';
 import AlbumItem from './AlbumItem';
 
-export { UserItem, TrackItem, PlaylistItem, AlbumItem };
+import ProfileTrackItem from './ProfileTrackItem';
+import ProfilePlaylistItem from './ProfilePlaylistItem';
+import ProfileAlbumItem from './ProfileAlbumItem';
+
+export { UserItem, TrackItem, PlaylistItem, AlbumItem, ProfileTrackItem, ProfilePlaylistItem, ProfileAlbumItem };

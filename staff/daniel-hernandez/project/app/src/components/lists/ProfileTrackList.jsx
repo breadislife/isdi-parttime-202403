@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from 'react-native';
-import ProfileTrackItem from '../items/ProfileTrackItem';
+import { ProfileTrackItem } from '../items';
 
 const ProfileTrackList = ({ items }) => {
    const renderEmptyList = type => (

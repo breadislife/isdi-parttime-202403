@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from 'react-native';
-import ProfilePlaylistItem from '../items/ProfilePlaylistItem';
+import { ProfilePlaylistItem } from '../items';
 
 const ProfilePlaylistList = ({ items }) => {
    const renderEmptyList = () => (
