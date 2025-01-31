@@ -1,9 +1,9 @@
 import { View, Image, Text, Pressable } from 'react-native';
 import { useTrackStore } from '../../store/track';
+import usePlayerHandlers from '../../hooks/usePlayerHandlers';
 import SpinningLoader from '../loaders/SpinningLoader';
 import { ItemIcons } from '../../../assets/images/icons';
 import formatSeconds from '../../utils/formatSeconds';
-import usePlayerHandlers from '../../hooks/usePlayerHandlers';
 
 const TrackItem = ({ item, onMore }) => {
    const { currentTrackId } = useTrackStore();

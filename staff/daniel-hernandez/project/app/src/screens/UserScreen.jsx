@@ -5,6 +5,7 @@ import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileButtonSet from '../components/ProfileButtonSet';
+import ProfileTrackList from '../components/lists/ProfileTrackList';
 import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
@@ -63,6 +64,7 @@ const UserScreen = ({ route }) => {
             <View className="top-0 items-center">
                <ProfileHeader item={userInfo} />
                <ProfileButtonSet item={userInfo} onFollowPress={handleFollowUser} />
+               <ProfileTrackList items={userInfo.tracks} />
             </View>
          )}
 
