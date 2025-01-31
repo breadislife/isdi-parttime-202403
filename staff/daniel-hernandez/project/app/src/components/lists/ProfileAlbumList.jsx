@@ -4,8 +4,8 @@ import { ProfileAlbumItem } from '../items';
 const ProfileAlbumList = ({ items }) => {
    const renderEmptyList = () => (
       <View className="w-[90%] bg-palette-80 items-center p-4 pt-3 mt-1.5 rounded-lg self-center">
-         <Text className="font-poppins-semibold text-palette-40 text-base">Woah... 😳</Text>
-         <Text className="font-poppins text-palette-40 text-sm">This user doesn't have any albums yet.</Text>
+         <Text className="font-poppins-semibold text-palette-40 text-base">Hmm..</Text>
+         <Text className="font-poppins text-palette-40 text-sm">This user doesn't seem to have any albums yet.</Text>
       </View>
    );
 

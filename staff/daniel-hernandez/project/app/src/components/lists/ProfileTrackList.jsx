@@ -4,7 +4,7 @@ import { ProfileTrackItem } from '../items';
 const ProfileTrackList = ({ items }) => {
    const renderEmptyList = type => (
       <View className="w-[90%] bg-palette-80 items-center p-4 pt-3 mt-1.5 rounded-lg self-center">
-         <Text className="font-poppins-semibold text-palette-40 text-base">Woah... 😳</Text>
+         <Text className="font-poppins-semibold text-palette-40 text-base">Huh..</Text>
          <Text className="font-poppins text-palette-40 text-sm"> {type === 'popular' ? "This user doesn't have any popular tracks yet." : "This user hasn't added any recent tracks."}</Text>
       </View>
    );

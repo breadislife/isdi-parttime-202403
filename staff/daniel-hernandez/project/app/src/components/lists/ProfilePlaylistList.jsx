@@ -4,7 +4,7 @@ import { ProfilePlaylistItem } from '../items';
 const ProfilePlaylistList = ({ items }) => {
    const renderEmptyList = () => (
       <View className="w-[90%] bg-palette-80 items-center p-4 pt-3 mt-1.5 rounded-lg self-center">
-         <Text className="font-poppins-semibold text-palette-40 text-base">Woah... 😳</Text>
+         <Text className="font-poppins-semibold text-palette-40 text-base">Gasp!</Text>
          <Text className="font-poppins text-palette-40 text-sm">This user doesn't have any public playlists yet.</Text>
       </View>
    );
