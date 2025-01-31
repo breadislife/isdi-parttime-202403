@@ -1,14 +1,13 @@
 import Config from 'react-native-config';
 import { useCallback } from 'react';
 import TrackPlayer, { Capability } from 'react-native-track-player';
-import { useAbortController, useControllerStore } from '../store/controller';
+import { useAbortController } from '../store/controller';
 import { useTrackStore } from '../store/track';
 import { InvalidTokenError, SystemError, TokenExpiredError } from 'com/errors';
 import { storage } from '../services';
 import services from '../services';
 
 const usePlayer = () => {
-   const { abortController } = useControllerStore();
    const { createNewAbortController, abortCurrentAbortController } = useAbortController();
    const { setCurrentTrackId } = useTrackStore();
 
@@ -69,18 +68,21 @@ const usePlayer = () => {
 
    const play = useCallback(async (item, range = null, requestId) => {
       try {
-         if (useTrackStore.getState().playRequest !== requestId) return;
+         const currentPlayRequest = useTrackStore.getState().playRequest;
+         if (currentPlayRequest !== requestId) return;
 
          // Abort previous controller and reset to a new one
          abortCurrentAbortController();
-         createNewAbortController();
+         const newAbortController = createNewAbortController(); // Use the new controller immediately
 
-         // Set new current track id
-         setCurrentTrackId(item.id);
+         const info = await services.player(item.id, { signal: newAbortController.signal });
 
-         const info = await services.player(item.id, { signal: abortController?.signal });
-
+         // Recheck the playRequest to make sure it's still valid
          if (useTrackStore.getState().playRequest !== requestId) return;
+
+         // Check if the request was aborted before proceeding
+         if (newAbortController.signal.aborted) throw new Error('AbortError');
+
          await TrackPlayer.load({
             id: item.id,
             url: info.url,
@@ -99,13 +101,18 @@ const usePlayer = () => {
             headers: { Authorization: `Bearer ${info.token}`, ...(range && { Range: range }) }
          });
 
+         // Final check of the requestId to ensure its validity
          if (useTrackStore.getState().playRequest !== requestId) return;
+
          await TrackPlayer.play();
+
+         // Set the new currentTrack id
+         useTrackStore.setState({ currentTrackId: item.id });
       } catch (error) {
-         if (abortController?.signal?.aborted) throw new Error('AbortError');
+         if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Player failed: ${error.message}`);
       }
-   }, []);
+   }, [abortCurrentAbortController, createNewAbortController]);
 
    const stop = useCallback(async () => {
       try {

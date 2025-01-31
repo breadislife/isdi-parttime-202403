@@ -1,8 +1,9 @@
-import { trigger } from 'react-native-haptic-feedback';
 import { usePlaybackState, useProgress, State, RepeatMode } from 'react-native-track-player';
 import useNotification from './useNotification';
 import usePlayer from './usePlayer';
 import { useTrackStore } from '../store/track';
+import { trigger } from 'react-native-haptic-feedback';
+import { useCallback } from 'react';
 
 const usePlayerHandlers = () => {
    const { state: playbackState } = usePlaybackState();
@@ -83,20 +84,24 @@ const usePlayerHandlers = () => {
       }
    };
 
-   const handlePlay = async track => {
+   const handlePlay = useCallback(async track => {
       try {
          const requestId = Date.now();
 
          // Set the id immediately
-         useTrackStore.setState({ playRequest: requestId });
+         // NOTE: Using a callback to ensure synchronous state update
+         useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
 
          await play(track, null, requestId);
       } catch (e) {
          if (e.message === 'AbortError') return;
          notify('oopsie-daisy! something went wrong..', notificationTypes.error);
-         return;
+      } finally {
+         // Reset playRequest after the play request is processed
+         // NOTE: Using a callback to ensure synchronous state update
+         useTrackStore.setState(state => ({ ...state, playRequest: null }));
       }
-   };
+   }, []);
 
    return { handlePlayPause, handleSkipPrevious, handleSkipNext, handleToggleLoop, handleSeek, handlePlay };
 };

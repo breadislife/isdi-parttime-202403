@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { create } from 'zustand';
 
 export const useControllerStore = create(set => ({
@@ -10,15 +11,16 @@ export const useControllerStore = create(set => ({
 export const useAbortController = () => {
    const { abortController, setAbortController } = useControllerStore();
 
-   const abortCurrentAbortController = () => {
+   const abortCurrentAbortController = useCallback(() => {
       if (abortController) abortController.abort();
-   };
+   }, [abortController]);
 
-   const createNewAbortController = () => {
+   const createNewAbortController = useCallback(() => {
       const controller = new AbortController();
-
       setAbortController(controller);
-   };
+
+      return controller; // Return the new controller for immediate use
+   }, [setAbortController]);
 
    return { abortCurrentAbortController, createNewAbortController };
 };
