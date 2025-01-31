@@ -4,13 +4,15 @@ import signOut from './auth/signOut';
 import checkEmail from './auth/checkEmail';
 
 import search from './search';
-import { storage } from './storage.js';
+import { storage } from './storage';
 
 import { playback } from './playback';
-import player from './player.js';
+import player from './player';
 
-import followUser from './user/followUser.js';
-import getUserInfo from './user/getUserInfo.js';
+import followUser from './user/followUser';
+import getUserInfo from './user/getUserInfo';
+
+import getPlaylistInfo from './playlist/getPlaylistInfo';
 
 export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo };
 
@@ -24,5 +26,6 @@ export default {
    playback,
    player,
    followUser,
-   getUserInfo
+   getUserInfo,
+   getPlaylistInfo
 };
