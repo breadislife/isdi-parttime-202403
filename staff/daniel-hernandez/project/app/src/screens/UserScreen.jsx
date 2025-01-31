@@ -1,17 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import useNotification from '../hooks/useNotification';
+import { useTrackStore } from '../store/track';
 import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileButtonSet from '../components/ProfileButtonSet';
 import ProfileTrackList from '../components/lists/ProfileTrackList';
+import ProfilePlaylistList from '../components/lists/ProfilePlaylistList';
 import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
 const UserScreen = ({ route }) => {
    const { userId } = route.params;
    const { notify, notificationTypes } = useNotification();
+   const { currentTrackId } = useTrackStore();
 
    const [loading, setLoading] = useState(true);
    const [userInfo, setUserInfo] = useState(null);
@@ -61,11 +64,12 @@ const UserScreen = ({ route }) => {
    return (
       <View className="flex-1 bg-palette-90">
          {!loading && userInfo && (
-            <View className="top-0 items-center">
+            <ScrollView className="top-0" contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }}>
                <ProfileHeader item={userInfo} />
                <ProfileButtonSet item={userInfo} onFollowPress={handleFollowUser} />
                <ProfileTrackList items={userInfo.tracks} />
-            </View>
+               <ProfilePlaylistList items={userInfo.playlists} />
+            </ScrollView>
          )}
 
          {loading && !userInfo && (
