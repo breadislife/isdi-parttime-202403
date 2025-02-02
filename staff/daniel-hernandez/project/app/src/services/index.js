@@ -14,7 +14,9 @@ import getUserInfo from './user/getUserInfo';
 
 import getPlaylistInfo from './playlist/getPlaylistInfo';
 
-export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo };
+import getAlbumInfo from './album/getAlbumInfo';
+
+export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, getAlbumInfo };
 
 export default {
    signIn,
@@ -27,5 +29,6 @@ export default {
    player,
    followUser,
    getUserInfo,
-   getPlaylistInfo
+   getPlaylistInfo,
+   getAlbumInfo
 };
