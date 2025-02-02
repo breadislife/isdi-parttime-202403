@@ -15,7 +15,7 @@ const ProfileAlbumList = ({ items }) => {
          {items.length === 0 ? (
             renderEmptyList()
          ) : (
-            <FlatList data={items} renderItem={({ item }) => <ProfileAlbumItem item={item} />} keyExtractor={item => item._id} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 10 }} initialNumToRender={5} maxToRenderPerBatch={5} />
+            <FlatList data={items} renderItem={({ item }) => <ProfileAlbumItem item={item} />} keyExtractor={item => item.id} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 10 }} initialNumToRender={5} maxToRenderPerBatch={5} />
          )}
       </View>
    );
