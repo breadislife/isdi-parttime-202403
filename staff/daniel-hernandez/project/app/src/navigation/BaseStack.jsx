@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Header from '../components/Header';
 import BackButton from '../components/buttons/BackButton';
-import { UserScreen, PlaylistScreen } from '../screens';
+import { UserScreen, PlaylistScreen, AlbumScreen } from '../screens';
 
 const Base = createNativeStackNavigator();
 
@@ -18,6 +18,7 @@ const BaseStack = ({ name, component, title, options, props }) => (
 
       <Base.Screen name="UserScreen" component={UserScreen} options={{ headerTitle: '', headerLeft: () => <BackButton /> }} />
       <Base.Screen name="PlaylistScreen" component={PlaylistScreen} options={{ headerTitle: '', headerLeft: () => <BackButton /> }} />
+      <Base.Screen name="AlbumScreen" component={AlbumScreen} options={{ headerTitle: '', headerLeft: () => <BackButton /> }} />
    </Base.Navigator>
 );
 

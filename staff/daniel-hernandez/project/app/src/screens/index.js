@@ -10,6 +10,7 @@ import SearchScreen from './main/SearchScreen';
 import LoadingScreen from './LoadingScreen';
 import UserScreen from './UserScreen';
 import PlaylistScreen from './PlaylistScreen';
+import AlbumScreen from './AlbumScreen';
 
 export const initialScreens = {
    LandingScreen,
@@ -24,7 +25,7 @@ export const mainScreens = {
    SearchScreen
 };
 
-export { LandingScreen, EmailInputScreen, PasswordInputScreen, UsernameInputScreen, HomeScreen, LibraryScreen, SearchScreen, LoadingScreen, UserScreen, PlaylistScreen };
+export { LandingScreen, EmailInputScreen, PasswordInputScreen, UsernameInputScreen, HomeScreen, LibraryScreen, SearchScreen, LoadingScreen, UserScreen, PlaylistScreen, AlbumScreen };
 
-const screens = { ...initialScreens, ...mainScreens, LoadingScreen, UserScreen, PlaylistScreen };
+const screens = { ...initialScreens, ...mainScreens, LoadingScreen, UserScreen, PlaylistScreen, AlbumScreen };
 export default screens;

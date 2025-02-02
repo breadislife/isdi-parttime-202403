@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import useNotification from '../hooks/useNotification';
 import { useTrackStore } from '../store/track';
 import SpinningLoader from '../components/loaders/SpinningLoader';

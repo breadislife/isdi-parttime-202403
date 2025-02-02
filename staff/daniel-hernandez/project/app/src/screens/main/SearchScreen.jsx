@@ -188,7 +188,7 @@ const SearchScreen = () => {
             case 'playlists':
                return <PlaylistItem item={item} onMore={() => {}} />;
             case 'albums':
-               return <AlbumItem item={item} onMore={() => {}} onGeneralPress={() => {}} />;
+               return <AlbumItem item={item} onMore={() => {}} />;
             default:
                return null;
          }
