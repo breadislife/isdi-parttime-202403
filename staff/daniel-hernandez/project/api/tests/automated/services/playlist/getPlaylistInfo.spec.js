@@ -65,46 +65,36 @@ describe('getPlaylistInfo', () => {
       const result = await expect(getPlaylistInfo(user.id, playlist.id)).to.be.fulfilled.and.eventually.be.a('object');
 
       expect(result).to.deep.equal({
-         id: playlist._id.toString(),
+         id: playlist.id,
          name: playlist.name,
          description: playlist.description,
          public: playlist.public,
          coverArt: playlist.coverArt,
          owner: {
-            id: user._id.toString(),
+            id: user.id,
             username: user.username,
             profileImage: user.profileImage
          },
          tracks: [
             {
-               id: track1._id.toString(),
+               id: track1.id,
                name: track1.name,
-               artists: [
-                  {
-                     id: user._id.toString(),
-                     username: user.username
-                  }
-               ],
+               artists: [{ id: user.id, username: user.username }],
                duration: track1.duration.toString(),
                coverArt: track1.coverArt,
                album: {
-                  id: album._id.toString(),
+                  id: album.id,
                   name: album.name
                }
             },
             {
-               id: track2._id.toString(),
+               id: track2.id,
                name: track2.name,
-               artists: [
-                  {
-                     id: user._id.toString(),
-                     username: user.username
-                  }
-               ],
+               artists: [{ id: user.id, username: user.username }],
                duration: track2.duration.toString(),
                coverArt: track2.coverArt,
                album: {
-                  id: album._id.toString(),
+                  id: album.id,
                   name: album.name
                }
             }
@@ -114,9 +104,9 @@ describe('getPlaylistInfo', () => {
 
       const logEntry = await expect(Log.findOne({ type: constants.VIEWED_USER_PLAYLISTS })).to.eventually.be.a('object');
       expect(logEntry).to.exist;
-      expect(logEntry.user.toString()).to.equal(user._id.toString());
+      expect(logEntry.user.toString()).to.equal(user.id);
       expect(logEntry.type).to.equal(constants.VIEWED_USER_PLAYLISTS);
-      expect(logEntry.playlist.toString()).to.equal(playlist._id.toString());
+      expect(logEntry.playlist.toString()).to.equal(playlist.id);
    });
 
    it("fails when the user doesn't exist", async () => {
