@@ -26,8 +26,7 @@ describe('getUserInfo', () => {
       await user2.save();
 
       const now = new Date();
-      const track1 = await Track.create({ name: 'Track 1', addedBy: user2.id, artists: [user2.id], duration: 200, createdAt: now });
-      const track2 = await Track.create({ name: 'Track 2', addedBy: user2.id, artists: [user2.id], duration: 180, createdAt: new Date(now.getTime() + 1000) });
+      const [track1, track2] = await Promise.all([Track.create({ name: 'Track 1', addedBy: user2.id, artists: [user2.id], duration: 200, createdAt: now }), Track.create({ name: 'Track 2', addedBy: user2.id, artists: [user2.id], duration: 180, createdAt: new Date(now.getTime() + 1000) })]);
 
       const [album, playlist, playlist2] = await Promise.all([
          Album.create({ name: 'Album', type: 'single', tracks: [track1.id], artists: [user2.id] }),
@@ -36,12 +35,10 @@ describe('getUserInfo', () => {
       ]);
 
       track1.album = album._id;
-      await track1.save();
-
       track2.album = album._id;
-      await track2.save();
+      await Promise.all([track1.save(), track2.save()]);
 
-      await Promise.all([Log.create({ user: user1.id, type: constants.PLAYED_TRACK, track: track2.id }), Log.create({ user: user2.id, type: constants.PLAYED_TRACK, track: track2.id }), Log.create({ user: user1.id, type: constants.PLAYED_TRACK, track: track1.id })]);
+      await Promise.all([Log.create({ user: user1.id, type: constants.PLAYED_TRACK, track: track2.id }), Log.create({ user: user1.id, type: constants.PLAYED_TRACK, track: track2.id }), Log.create({ user: user1.id, type: constants.PLAYED_TRACK, track: track1.id })]);
 
       const userInfo = await expect(getUserInfo(user1.id, user2.id)).to.be.fulfilled.and.to.eventually.be.a('object');
 
@@ -57,6 +54,7 @@ describe('getUserInfo', () => {
       expect(userInfo.tracks.popular[0].artists).to.be.an('array').with.lengthOf(1);
       expect(userInfo.tracks.popular[0].artists[0]).to.include({ username: 'eva02', id: user2.id });
       expect(userInfo.tracks.popular[0].album).to.include({ name: 'Album', id: album.id });
+
       expect(userInfo.tracks.popular[1]).to.include({ name: 'Track 1', duration: '200', plays: '1', id: track1.id, coverArt: '' });
       expect(userInfo.tracks.popular[1].artists).to.be.an('array').with.lengthOf(1);
       expect(userInfo.tracks.popular[1].artists[0]).to.include({ username: 'eva02', id: user2.id });
