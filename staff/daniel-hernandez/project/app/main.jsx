@@ -17,9 +17,6 @@ import App from './src/App';
       » npm run reset-cache => <C-c> => npm run ios
 
    WARN:
-      @react-navigation/drawer throws a warning because
-      findHostInstance_DEPRECATED is deprecated in StrictMode.
-
       expo-blur throws a warning because
       findNodeHandle is deprecated in StrictMode.
 

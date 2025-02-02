@@ -16,10 +16,10 @@ const TabNavigator = () => (
    <>
       <FloatingPlayer />
       <Tab.Navigator
-         lazy={true}
          unmountOnBlur={true}
-         initialLayout={{ width: Dimensions.get('window').width }}
+         initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
          screenOptions={({ route }) => ({
+            lazy: true,
             headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
                let iconSource;
