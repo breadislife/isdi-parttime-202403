@@ -13,6 +13,8 @@ import getUserInfoHandler from './user/getUserInfo.js';
 
 import getPlaylistInfoHandler from './playlist/getPlaylistInfo.js';
 
+import getAlbumInfoHandler from './album/getAlbumInfo.js';
+
 export default {
    loginHandler,
    registerHandler,
@@ -27,5 +29,7 @@ export default {
    followUserHandler,
    getUserInfoHandler,
 
-   getPlaylistInfoHandler
+   getPlaylistInfoHandler,
+
+   getAlbumInfoHandler
 };
