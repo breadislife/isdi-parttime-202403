@@ -8,6 +8,7 @@ import player from './player.js';
 import followUser from './user/followUser.js';
 import getUserInfo from './user/getUserInfo.js';
 import getPlaylistInfo from './playlist/getPlaylistInfo.js';
+import getAlbumInfo from './album/getAlbumInfo.js';
 
 export default {
    login,
@@ -19,5 +20,6 @@ export default {
    player,
    followUser,
    getUserInfo,
-   getPlaylistInfo
+   getPlaylistInfo,
+   getAlbumInfo
 };
