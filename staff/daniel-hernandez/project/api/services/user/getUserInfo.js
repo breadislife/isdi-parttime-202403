@@ -42,11 +42,18 @@ const getUserInfo = (userId, targetUserId) => {
                { $project: { username: 1, followers: '$followerCount', following: '$followingCount', isFollowed: { $in: [user._id, '$followers'] }, profileImage: 1 } }
             ]),
 
-            // Gets popular tracks based on play logs
+            // Gets popular tracks created by the target user based on play logs (excluding plays by the target user)
             Track.aggregate([
-               { $lookup: { from: 'logs', localField: '_id', foreignField: 'track', pipeline: [{ $match: { type: constants.PLAYED_TRACK } }], as: 'trackLogs' } },
+               { $match: { $or: [{ addedBy: targetUser._id }, { artists: { $in: [targetUser._id] } }] } },
+               { $lookup: { from: 'logs', localField: '_id', foreignField: 'track', as: 'trackLogs' } },
                { $unwind: { path: '$trackLogs' } },
+
+               // Filter out logs where the user is the target user
+               { $match: { 'trackLogs.user': { $ne: targetUser._id } } },
+
+               // Group by track id to count plays and retain track details
                { $group: { _id: '$_id', plays: { $sum: 1 }, name: { $first: '$name' }, artists: { $first: '$artists' }, duration: { $first: '$duration' }, coverArt: { $first: '$coverArt' }, album: { $first: '$album' } } },
+
                { $sort: { plays: -1 } },
                { $limit: 10 },
                { $lookup: { from: 'users', localField: 'artists', foreignField: '_id', as: 'artists' } },
