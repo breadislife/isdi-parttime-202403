@@ -13,6 +13,10 @@ const transformDocument = obj => {
          return item.toString();
       }
 
+      if (item instanceof Date) {
+         return item.toISOString(); // Convert date into ISO string
+      }
+
       if (item && typeof item === 'object') {
          const transformedItem = {};
 
