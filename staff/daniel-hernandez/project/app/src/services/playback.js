@@ -1,6 +1,8 @@
 import Config from 'react-native-config';
 import TrackPlayer, { Event } from 'react-native-track-player';
 import { storage } from './storage';
+import { useTrackStore } from '../store/track';
+import player from './player';
 
 // This service needs to be registered for react-native-track-player to work
 export const playback = () => {
@@ -32,9 +34,53 @@ export const playback = () => {
       TrackPlayer.seekTo(event.position);
    });
 
+   // Playback queue and progress events
    TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async event => {
       storage.delete(Config.CURRENT_TRACK_KEY);
       storage.delete(Config.TRACK_PROGRESS_KEY);
+
+      const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
+      if (currentPlaylist && currentTrackIndex !== null) {
+         const nextIndex = currentTrackIndex + 1;
+
+         if (nextIndex < currentPlaylist.length) {
+            // Play the next track in the playlist
+            const nextTrack = currentPlaylist[nextIndex];
+
+            try {
+               const info = await player(nextTrack.id);
+
+               await TrackPlayer.load({
+                  id: nextTrack.id,
+                  url: info.url,
+                  contentType: info.mimeType,
+                  duration: parseInt(info.duration),
+                  title: nextTrack.name,
+                  artist: nextTrack.artists.length > 2 ? `${nextTrack.artists.slice(0, 2).map(artist => artist.username).join(', ')}...` : nextTrack.artists.map(artist => artist.username).join(', '),
+                  album: nextTrack.album.name,
+                  artwork: nextTrack.coverArt || require('../../assets/images/extras/unknown.png'),
+                  headers: { Authorization: `Bearer ${info.token}` }
+               });
+
+               // Set new currentTrackId
+               useTrackStore.setState({ currentTrackId: nextTrack.id });
+
+               await TrackPlayer.play();
+               useTrackStore.setState({ currentTrackIndex: nextIndex });
+            } catch {
+               // Failed to load next track
+               // TODO: Find a way to notify the user that the auto play feature has failed
+               try {
+                  await TrackPlayer.stop();
+               } catch {}
+            }
+         } else {
+            // End of playlist stop / reset
+            try {
+               await TrackPlayer.stop();
+            } catch {}
+         }
+      }
    });
 
    TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, event => {
@@ -53,6 +99,25 @@ export const playback = () => {
                storage.set(Config.CURRENT_TRACK_KEY, track);
             }
          } catch {}
+      }
+
+      const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
+      if (currentPlaylist && currentTrackIndex !== null) {
+         let playlist;
+
+         try {
+            playlist = JSON.stringify(currentPlaylist);
+         } catch {}
+
+         try {
+            if (playlist) {
+               storage.set(Config.CURRENT_PLAYLIST_KEY, playlist);
+               storage.set(Config.CURRENT_PLAYLIST_INDEX_KEY, currentTrackIndex);
+            }
+         } catch {}
+      } else {
+         storage.delete(Config.CURRENT_PLAYLIST_KEY);
+         storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
       }
    });
 

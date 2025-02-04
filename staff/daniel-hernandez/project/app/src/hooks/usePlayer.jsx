@@ -20,44 +20,96 @@ const usePlayer = () => {
          await TrackPlayer.setupPlayer();
          TrackPlayer.updateOptions({ stopWithApp: true, capabilities: [Capability.Play, Capability.Pause, Capability.Stop, Capability.SkipToNext, Capability.SkipToPrevious, Capability.SeekTo], compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext], progressUpdateEventInterval: 1 });
 
-         const stringifiedTrack = storage.getString(Config.CURRENT_TRACK_KEY);
-         const progress = storage.getNumber(Config.TRACK_PROGRESS_KEY);
+         // Check if the user was last listening to a playlist
+         const stringifiedPlaylist = storage.getString(Config.CURRENT_PLAYLIST_KEY);
+         const playlistIndex = storage.getNumber(Config.CURRENT_PLAYLIST_INDEX_KEY);
 
-         if (stringifiedTrack) {
-            let track, info;
+         if (stringifiedPlaylist && playlistIndex !== null) {
+            let playlist, info;
 
             try {
-               track = JSON.parse(stringifiedTrack);
+               playlist = JSON.parse(stringifiedPlaylist);
             } catch { return; }
 
-            try {
-               info = await services.player(track.id);
-            } catch (error) {
-               if (error instanceof TokenExpiredError || error instanceof InvalidTokenError) throw error;
-               return;
-            }
+            const track = playlist[playlistIndex];
 
-            // Set current track id
-            setCurrentTrackId(track.id);
-
-            try {
-               await TrackPlayer.load({
-                  id: track.id,
-                  url: info.url,
-                  contentType: info.mimeType,
-                  duration: parseInt(info.duration),
-                  title: track.title,
-                  artist: track.artist,
-                  album: track.album,
-                  artwork: track.artwork || require('../../assets/images/extras/unknown.png'),
-                  headers: { Authorization: `Bearer ${info.token}` }
-               });
-            } catch { return; }
-
-            if (progress) {
+            if (track) {
                try {
-                  await TrackPlayer.seekTo(progress);
+                  info = await services.player(track.id);
+               } catch (error) {
+                  if (error instanceof TokenExpiredError || error instanceof InvalidTokenError) throw error;
+                  return;
+               }
+
+               setCurrentTrackId(track.id);
+
+               try {
+                  await TrackPlayer.load({
+                     id: track.id,
+                     url: info.url,
+                     contentType: info.mimeType,
+                     duration: parseInt(info.duration),
+                     title: track.name,
+                     artist: track.artists.length > 2 ? `${track.artists.slice(0, 2).map(artist => artist.username).join(', ')}...` : track.artists.map(artist => artist.username).join(', '),
+                     album: track.album.name,
+                     artwork: track.coverArt || require('../../assets/images/extras/unknown.png'),
+                     headers: { Authorization: `Bearer ${info.token}` }
+                  });
                } catch { return; }
+
+               useTrackStore.setState({
+                  currentTrackId: track.id,
+                  currentPlaylist: playlist,
+                  currentTrackIndex: playlistIndex
+               });
+
+               const progress = storage.getNumber(Config.TRACK_PROGRESS_KEY);
+               if (progress) {
+                  try {
+                     await TrackPlayer.seekTo(progress);
+                  } catch { return; }
+               }
+            }
+         } else {
+            const stringifiedTrack = storage.getString(Config.CURRENT_TRACK_KEY);
+            const progress = storage.getNumber(Config.TRACK_PROGRESS_KEY);
+
+            if (stringifiedTrack) {
+               let track, info;
+
+               try {
+                  track = JSON.parse(stringifiedTrack);
+               } catch { return; }
+
+               try {
+                  info = await services.player(track.id);
+               } catch (error) {
+                  if (error instanceof TokenExpiredError || error instanceof InvalidTokenError) throw error;
+                  return;
+               }
+
+               // Set current track id
+               setCurrentTrackId(track.id);
+
+               try {
+                  await TrackPlayer.load({
+                     id: track.id,
+                     url: info.url,
+                     contentType: info.mimeType,
+                     duration: parseInt(info.duration),
+                     title: track.title,
+                     artist: track.artist,
+                     album: track.album,
+                     artwork: track.artwork || require('../../assets/images/extras/unknown.png'),
+                     headers: { Authorization: `Bearer ${info.token}` }
+                  });
+               } catch { return; }
+
+               if (progress) {
+                  try {
+                     await TrackPlayer.seekTo(progress);
+                  } catch { return; }
+               }
             }
          }
       } catch (error) {
@@ -66,54 +118,64 @@ const usePlayer = () => {
       }
    }, [setCurrentTrackId]);
 
-   const play = useCallback(async (item, range = null, requestId) => {
-      try {
-         const currentPlayRequest = useTrackStore.getState().playRequest;
-         if (currentPlayRequest !== requestId) return;
+   const play = useCallback(async (item, range = null, requestId, playlist = null, index = 0) => {
+         try {
+            const currentPlayRequest = useTrackStore.getState().playRequest;
+            if (currentPlayRequest !== requestId) return;
 
-         // Abort previous controller and reset to a new one
-         abortCurrentAbortController();
-         const newAbortController = createNewAbortController(); // Use the new controller immediately
+            // Abort previous controller and reset to a new one
+            abortCurrentAbortController();
+            const newAbortController = createNewAbortController(); // Use the new controller immediately
 
-         const info = await services.player(item.id, { signal: newAbortController.signal });
+            // If a playlist is provided, set it in the store
+            if (playlist) {
+               useTrackStore.setState(state => ({ ...state, currentPlaylist: playlist, currentTrackIndex: index }));
+            } else {
+               // Clear playlist data if switching to a single track
+               useTrackStore.setState(state => ({ ...state, currentPlaylist: null, currentTrackIndex: null }));
+               storage.delete(Config.CURRENT_PLAYLIST_KEY);
+               storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
+            }
 
-         // Recheck the playRequest to make sure it's still valid
-         if (useTrackStore.getState().playRequest !== requestId) return;
+            const info = await services.player(item.id, { signal: newAbortController.signal });
 
-         // Check if the request was aborted before proceeding
-         if (newAbortController.signal.aborted) throw new Error('AbortError');
+            // Recheck the playRequest to make sure it's still valid
+            if (useTrackStore.getState().playRequest !== requestId) return;
 
-         await TrackPlayer.load({
-            id: item.id,
-            url: info.url,
-            contentType: info.mimeType,
-            duration: parseInt(info.duration),
-            title: item.name,
-            artist:
-               item.artists.length > 2
-                  ? `${item.artists
-                       .slice(0, 2)
-                       .map(artist => artist.username)
-                       .join(', ')}...`
-                  : item.artists.map(artist => artist.username).join(', '),
-            album: item.album.name,
-            artwork: item.coverArt || require('../../assets/images/extras/unknown.png'),
-            headers: { Authorization: `Bearer ${info.token}`, ...(range && { Range: range }) }
-         });
+            // Check if the request was aborted before proceeding
+            if (newAbortController.signal.aborted) throw new Error('AbortError');
 
-         // Final check of the requestId to ensure its validity
-         if (useTrackStore.getState().playRequest !== requestId) return;
+            await TrackPlayer.load({
+               id: item.id,
+               url: info.url,
+               contentType: info.mimeType,
+               duration: parseInt(info.duration),
+               title: item.name,
+               artist: item.artists.length > 2 ? `${item.artists.slice(0, 2).map(artist => artist.username).join(', ')}...` : item.artists.map(artist => artist.username).join(', '),
+               album: item.album.name,
+               artwork: item.coverArt || require('../../assets/images/extras/unknown.png'),
+               headers: { Authorization: `Bearer ${info.token}`, ...(range && { Range: range }) }
+            });
 
-         // Set the new currentTrack id
-         // NOTE: Using a callback to ensure synchronous state update
-         useTrackStore.setState(state => ({ ...state, currentTrackId: item.id }));
+            // Final check of the requestId to ensure its validity
+            if (useTrackStore.getState().playRequest !== requestId) return;
 
-         await TrackPlayer.play();
-      } catch (error) {
-         if (error.message === 'AbortError') throw new Error('AbortError');
-         throw new SystemError(`Player failed: ${error.message}`);
-      }
-   }, [abortCurrentAbortController, createNewAbortController]);
+            // Set the new currentTrack id
+            // NOTE: Using a callback to ensure synchronous state update
+            useTrackStore.setState(state => ({ ...state, currentTrackId: item.id }));
+
+            await TrackPlayer.play();
+         } catch (error) {
+            if (error.message === 'AbortError') throw new Error('AbortError');
+            throw new SystemError(`Player failed: ${error.message}`);
+         }
+      }, [abortCurrentAbortController, createNewAbortController]);
+
+   const playPlaylist = useCallback(async (playlist, index = 0) => {
+         const requestId = Date.now();
+         useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
+         await play(playlist[index], null, requestId, playlist, index);
+   }, [play]);
 
    const stop = useCallback(async () => {
       try {
@@ -185,31 +247,35 @@ const usePlayer = () => {
 
    const skipToNext = useCallback(async () => {
       try {
-         const queue = await TrackPlayer.getQueue();
-         const currentTrackIndex = await TrackPlayer.getActiveTrackIndex();
+         const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
 
-         if (currentTrackIndex < queue.length - 1) {
-            await TrackPlayer.skipToNext(0);
+         if (currentPlaylist && currentTrackIndex !== null && currentTrackIndex < currentPlaylist.length - 1) {
+            const nextIndex = currentTrackIndex + 1;
+            useTrackStore.setState(state => ({ ...state, currentTrackIndex: nextIndex }));
+            await playPlaylist(currentPlaylist, nextIndex);
          }
       } catch (error) {
          throw new SystemError(`Failed to skip to next track: ${error.message}`);
       }
-   }, []);
+   }, [playPlaylist]);
 
    const skipToPrevious = useCallback(async () => {
       try {
-         const currentTrackIndex = await TrackPlayer.getActiveTrackIndex();
+         const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
          const { position } = await TrackPlayer.getProgress();
 
          if (position > 3) {
             await TrackPlayer.seekTo(0);
-         } else if (currentTrackIndex > 0) {
+         } else if (currentPlaylist && currentTrackIndex !== null && currentTrackIndex > 0) {
+            const prevIndex = currentTrackIndex - 1;
+            await playPlaylist(currentPlaylist, prevIndex);
+         } else {
             await TrackPlayer.skipToPrevious(0);
          }
       } catch (error) {
          throw new SystemError(`Failed to skip to previous track: ${error.message}`);
       }
-   }, []);
+   }, [playPlaylist]);
 
    return {
       register,
@@ -224,7 +290,8 @@ const usePlayer = () => {
       setLoopMode,
       getLoopMode,
       skipToNext,
-      skipToPrevious
+      skipToPrevious,
+      playPlaylist
    };
 };
 

@@ -9,7 +9,7 @@ const usePlayerHandlers = () => {
    const { state: playbackState } = usePlaybackState();
    const { position, duration } = useProgress();
    const { notify, notificationTypes } = useNotification();
-   const { play, seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode } = usePlayer();
+   const { play, seekTo, pause, restart, resume, skipToPrevious, skipToNext, getLoopMode, setLoopMode, playPlaylist } = usePlayer();
 
    const handlePlayPause = async () => {
       trigger('impactLight');
@@ -84,24 +84,28 @@ const usePlayerHandlers = () => {
       }
    };
 
-   const handlePlay = useCallback(async track => {
-      try {
-         const requestId = Date.now();
+   const handlePlay = useCallback(async (track, playlist = null, index = 0) => {
+         try {
+            const requestId = Date.now();
 
-         // Set the id immediately
-         // NOTE: Using a callback to ensure synchronous state update
-         useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
+            // Set the id immediately
+            // NOTE: Using a callback to ensure synchronous state update
+            useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
 
-         await play(track, null, requestId);
-      } catch (e) {
-         if (e.message === 'AbortError') return;
-         notify('oopsie-daisy! something went wrong..', notificationTypes.error);
-      } finally {
-         // Reset playRequest after the play request is processed
-         // NOTE: Using a callback to ensure synchronous state update
-         useTrackStore.setState(state => ({ ...state, playRequest: null }));
-      }
-   }, []);
+            if (playlist) {
+               await playPlaylist(playlist, index);
+            } else {
+               await play(track, null, requestId);
+            }
+         } catch (e) {
+            if (e.message === 'AbortError') return;
+            notify('oopsie-daisy! something went wrong..', notificationTypes.error);
+         } finally {
+            // Reset playRequest after the play request is processed
+            // NOTE: Using a callback to ensure synchronous state update
+            useTrackStore.setState(state => ({ ...state, playRequest: null }));
+         }
+   }, [play, playPlaylist]);
 
    return { handlePlayPause, handleSkipPrevious, handleSkipNext, handleToggleLoop, handleSeek, handlePlay };
 };
