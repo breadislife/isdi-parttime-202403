@@ -41,7 +41,8 @@ const usePlayerHandlers = () => {
       trigger('impactLight');
       try {
          await skipToPrevious();
-      } catch {
+      } catch (e) {
+         if (e.message === 'AbortError') return;
          notify('failed to skip to previous !', notificationTypes.error);
       }
    };
@@ -50,7 +51,8 @@ const usePlayerHandlers = () => {
       trigger('impactLight');
       try {
          await skipToNext();
-      } catch {
+      } catch (e) {
+         if (e.message === 'AbortError') return;
          notify('failed to skip, sorry..', notificationTypes.error);
       }
    };

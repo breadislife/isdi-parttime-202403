@@ -255,6 +255,7 @@ const usePlayer = () => {
             await playPlaylist(currentPlaylist, nextIndex);
          }
       } catch (error) {
+         if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Failed to skip to next track: ${error.message}`);
       }
    }, [playPlaylist]);
@@ -273,6 +274,7 @@ const usePlayer = () => {
             await TrackPlayer.skipToPrevious(0);
          }
       } catch (error) {
+         if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Failed to skip to previous track: ${error.message}`);
       }
    }, [playPlaylist]);
