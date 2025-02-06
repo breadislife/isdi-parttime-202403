@@ -42,8 +42,6 @@ const usePlayer = () => {
                   return;
                }
 
-               setCurrentTrackId(track.id);
-
                try {
                   await TrackPlayer.load({
                      id: track.id,
@@ -66,6 +64,7 @@ const usePlayer = () => {
                });
 
                const progress = storage.getNumber(Config.TRACK_PROGRESS_KEY);
+
                if (progress) {
                   try {
                      await TrackPlayer.seekTo(progress);
@@ -120,7 +119,7 @@ const usePlayer = () => {
       }
    }, [setCurrentTrackId]);
 
-   const play = useCallback(async (item, range = null, requestId, playlist = null, index = 0) => {
+   const play = useCallback(async (item, range = null, requestId, playlist = null, index = 0, playlistId) => {
          try {
             const currentPlayRequest = useTrackStore.getState().playRequest;
             if (currentPlayRequest !== requestId) return;
@@ -129,11 +128,11 @@ const usePlayer = () => {
             abortCurrentAbortController();
             const newAbortController = createNewAbortController(); // Use the new controller immediately
 
-            // If a playlist is provided, set it in the store NOTE: Id is set in the play playlist function <>> arguably should be set here.
-            if (playlist) {
-               useTrackStore.setState(state => ({ ...state, currentPlaylist: playlist, currentTrackIndex: index }));
+            // If a playlist is provided, set it in the store
+            if (playlist && playlistId) {
+               useTrackStore.setState(state => ({ ...state, currentPlaylist: playlist, currentTrackIndex: index, currentPlaylistId: playlistId }));
             } else {
-               // Clear playlist data if switching to a single track
+               // Clear playlist data if switching to a single track && remove it from storage
                useTrackStore.setState(state => ({ ...state, currentPlaylist: null, currentTrackIndex: null, currentPlaylistId: null }));
                storage.delete(Config.CURRENT_PLAYLIST_KEY);
                storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
@@ -173,12 +172,6 @@ const usePlayer = () => {
             throw new SystemError(`Player failed: ${error.message}`);
          }
       }, [abortCurrentAbortController, createNewAbortController]);
-
-   const playPlaylist = useCallback(async (playlist, index = 0, playlistId) => {
-         const requestId = Date.now();
-         useTrackStore.setState(state => ({ ...state, playRequest: requestId, currentPlaylistId: playlistId })); // We now store the currentPlaylistId
-         await play(playlist[index], null, requestId, playlist, index);
-   }, [play]);
 
    const stop = useCallback(async () => {
       try {
@@ -254,14 +247,16 @@ const usePlayer = () => {
 
          if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex < currentPlaylist.length - 1) {
             const nextIndex = currentTrackIndex + 1;
-            useTrackStore.setState(state => ({ ...state, currentTrackIndex: nextIndex }));
-            await playPlaylist(currentPlaylist, nextIndex, currentPlaylistId);
+            const requestId = Date.now();
+
+            useTrackStore.setState(state => ({ ...state, currentTrackIndex: nextIndex, playRequest: requestId }));
+            await play(currentPlaylist[nextIndex], null, requestId, currentPlaylist, nextIndex, currentPlaylistId);
          }
       } catch (error) {
          if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Failed to skip to next track: ${error.message}`);
       }
-   }, [playPlaylist]);
+   }, [play]);
 
    const skipToPrevious = useCallback(async () => {
       try {
@@ -272,7 +267,10 @@ const usePlayer = () => {
             await TrackPlayer.seekTo(0);
          } else if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex > 0) {
             const prevIndex = currentTrackIndex - 1;
-            await playPlaylist(currentPlaylist, prevIndex, currentPlaylistId);
+            const requestId = Date.now();
+
+            useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
+            await play(currentPlaylist[prevIndex], null, requestId, currentPlaylist, prevIndex, currentPlaylistId);
          } else {
             await TrackPlayer.skipToPrevious(0);
          }
@@ -280,7 +278,7 @@ const usePlayer = () => {
          if (error.message === 'AbortError') throw new Error('AbortError');
          throw new SystemError(`Failed to skip to previous track: ${error.message}`);
       }
-   }, [playPlaylist]);
+   }, [play]);
 
    return {
       register,
@@ -296,7 +294,6 @@ const usePlayer = () => {
       getLoopMode,
       skipToNext,
       skipToPrevious,
-      playPlaylist
    };
 };
 

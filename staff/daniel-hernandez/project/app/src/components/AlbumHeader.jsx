@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { View, Image, Text } from 'react-native';
 import { useIsPlaying } from 'react-native-track-player';
 import usePlayerHandlers from '../hooks/usePlayerHandlers';
@@ -44,7 +43,8 @@ const AlbumHeader = ({ item }) => {
                         if (currentPlaylistId === item.id) {
                            handlePlayPause();
                         } else {
-                           handlePlay(null, item.tracks, 0, item.id); // Pass playlist id
+                           // Pass playlist id
+                           handlePlay(null, item.tracks, 0, item.id);
                         }
                      }}
                      isPlaying={currentPlaylistId === item.id && playing}
