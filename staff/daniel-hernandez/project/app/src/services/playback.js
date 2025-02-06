@@ -101,8 +101,8 @@ export const playback = () => {
          } catch {}
       }
 
-      const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
-      if (currentPlaylist && currentTrackIndex !== null) {
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+      if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId) {
          let playlist;
 
          try {
@@ -113,11 +113,13 @@ export const playback = () => {
             if (playlist) {
                storage.set(Config.CURRENT_PLAYLIST_KEY, playlist);
                storage.set(Config.CURRENT_PLAYLIST_INDEX_KEY, currentTrackIndex);
+               storage.set(Config.CURRENT_PLAYLIST_ID_KEY, currentPlaylistId);
             }
          } catch {}
       } else {
          storage.delete(Config.CURRENT_PLAYLIST_KEY);
          storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
+         storage.delete(Config.CURRENT_PLAYLIST_ID_KEY);
       }
    });
 

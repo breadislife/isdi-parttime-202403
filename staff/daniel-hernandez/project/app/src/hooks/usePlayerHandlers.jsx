@@ -86,17 +86,17 @@ const usePlayerHandlers = () => {
       }
    };
 
-   const handlePlay = useCallback(async (track, playlist = null, index = 0) => {
+   const handlePlay = useCallback(async (track, playlist = null, index = 0, playlistId = null) => {
          try {
-            const requestId = Date.now();
-
-            // Set the id immediately
-            // NOTE: Using a callback to ensure synchronous state update
-            useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
-
             if (playlist) {
-               await playPlaylist(playlist, index);
+               await playPlaylist(playlist, index, playlistId);
             } else {
+               const requestId = Date.now();
+
+               // Set the id immediately
+               // NOTE: Using a callback to ensure synchronous state update
+               useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
+
                await play(track, null, requestId);
             }
          } catch (e) {

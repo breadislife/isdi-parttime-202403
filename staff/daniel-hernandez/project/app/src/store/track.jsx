@@ -5,6 +5,7 @@ export const useTrackStore = create(set => ({
    playRequest: null,
    currentPlaylist: null, // Array of tracks in the current playlist
    currentTrackIndex: null, // Index of the currently playing track in the playlist
+   currentPlaylistId: null, // Current playlist id for ui stuff
 
    // Sets a new current track id
    setCurrentTrackId: id => set({ currentTrackId: id }),

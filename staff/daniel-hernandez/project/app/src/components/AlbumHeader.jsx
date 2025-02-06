@@ -1,11 +1,16 @@
+import { useState, useEffect } from 'react';
 import { View, Image, Text } from 'react-native';
+import { useIsPlaying } from 'react-native-track-player';
 import usePlayerHandlers from '../hooks/usePlayerHandlers';
+import { useTrackStore } from '../store/track';
 import PlayButton from './buttons/PlayButton';
 import formatSeconds from '../utils/formatSeconds';
 import { formatDate } from '../utils/formatDate';
 
 const AlbumHeader = ({ item }) => {
-   const { handlePlay } = usePlayerHandlers();
+   const { handlePlay, handlePlayPause } = usePlayerHandlers();
+   const { currentPlaylistId } = useTrackStore();
+   const { playing } = useIsPlaying();
 
    return (
       <View className="bg-palette-90 w-full my-1.5">
@@ -31,7 +36,20 @@ const AlbumHeader = ({ item }) => {
 
                <Text className="text-palette-40 font-spacemono text-xs leading-tight self-center mt-0.5">{formatDate(item.releaseDate)}</Text>
 
-               <PlayButton onPress={() => handlePlay(null, item.tracks)} />
+               <View className="flex-1" />
+
+               <View className="flex-row w-full justify-end">
+                  <PlayButton
+                     onPress={() => {
+                        if (currentPlaylistId === item.id) {
+                           handlePlayPause();
+                        } else {
+                           handlePlay(null, item.tracks, 0, item.id); // Pass playlist id
+                        }
+                     }}
+                     isPlaying={currentPlaylistId === item.id && playing}
+                  />
+               </View>
             </View>
          </View>
       </View>
