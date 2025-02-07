@@ -18,7 +18,7 @@ const usePlayer = () => {
    const setup = useCallback(async () => {
       try {
          await TrackPlayer.setupPlayer();
-         TrackPlayer.updateOptions({ stopWithApp: true, capabilities: [Capability.Play, Capability.Pause, Capability.Stop, Capability.SkipToNext, Capability.SkipToPrevious, Capability.SeekTo], compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext], progressUpdateEventInterval: 1 });
+         TrackPlayer.updateOptions({ stopWithApp: true, capabilities: [Capability.Play, Capability.Pause, Capability.Stop, Capability.SkipToNext, Capability.SkipToPrevious, Capability.SeekTo], compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext, Capability.SkipToPrevious], progressUpdateEventInterval: 1 });
 
          // Check if the user was last listening to a playlist
          const stringifiedPlaylist = storage.getString(Config.CURRENT_PLAYLIST_KEY);

@@ -14,12 +14,78 @@ export const playback = () => {
       TrackPlayer.play();
    });
 
-   TrackPlayer.addEventListener(Event.RemoteNext, () => {
-      TrackPlayer.skipToNext();
+   TrackPlayer.addEventListener(Event.RemoteNext, async () => {
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+      if (!currentPlaylist || currentTrackIndex === null || !currentPlaylistId) return;
+      
+      const nextIndex = currentTrackIndex + 1;
+      if (nextIndex >= currentPlaylist.length) return;
+      const nextTrack = currentPlaylist[nextIndex];
+
+      let info;
+      try {
+         info = await player(nextTrack.id);
+      } catch {}
+
+      try {
+         await TrackPlayer.load({
+            id: nextTrack.id,
+            url: info.url,
+            contentType: info.mimeType,
+            duration: parseInt(info.duration),
+            title: nextTrack.name,
+            artist: nextTrack.artists.length > 2 ? `${nextTrack.artists.slice(0, 2).map(artist => artist.username).join(', ')}...` : nextTrack.artists.map(artist => artist.username).join(', '),
+            album: nextTrack.album.name,
+            artwork: nextTrack.coverArt || require('../../assets/images/extras/unknown.png'),
+            headers: { Authorization: `Bearer ${info.token}` }
+         });
+      } catch {}
+
+      useTrackStore.setState({ currentTrackId: nextTrack.id, currentTrackIndex: nextIndex });
+
+      try {
+         await TrackPlayer.play();
+      } catch {}
    });
 
-   TrackPlayer.addEventListener(Event.RemotePrevious, () => {
-      TrackPlayer.skipToPrevious();
+   TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+      const { position } = await TrackPlayer.getProgress();
+
+      if (position > 3) {
+         await TrackPlayer.seekTo(0);
+         return;
+      }
+
+      if (!currentPlaylist || currentTrackIndex === null || currentTrackIndex <=0 || !currentPlaylistId) return;
+
+      const prevIndex = currentTrackIndex - 1;
+      const prevTrack = currentPlaylist[prevIndex];
+
+      let info;
+      try {
+         info = await player(prevTrack.id);
+      } catch {}
+
+      try {
+         await TrackPlayer.load({
+            id: prevTrack.id,
+            url: info.url,
+            contentType: info.mimeType,
+            duration: parseInt(info.duration),
+            title: prevTrack.name,
+            artist: prevTrack.artists.length > 2 ? `${prevTrack.artists.slice(0, 2).map(artist => artist.username).join(', ')}...` : prevTrack.artists.map(artist => artist.username).join(', '),
+            album: prevTrack.album.name,
+            artwork: prevTrack.coverArt || require('../../assets/images/extras/unknown.png'),
+            headers: { Authorization: `Bearer ${info.token}` }
+         });
+      } catch {}
+
+      useTrackStore.setState({ currentTrackId: prevTrack.id, currentTrackIndex: prevIndex });
+
+      try {
+         await TrackPlayer.play();
+      } catch {}
    });
 
    TrackPlayer.addEventListener(Event.RemoteJumpForward, async event => {

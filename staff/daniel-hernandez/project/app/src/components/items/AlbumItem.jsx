@@ -9,7 +9,7 @@ const AlbumItem = ({ item, onMore }) => {
    const { currentPlaylistId } = useTrackStore();
 
    return (
-      <Pressable key={item.id} className="py-2 flex-row items-start w-[100%] px-5" onPress={() => navigation?.navigate('AlbumScreen', { albumId: item.id })}>
+      <Pressable key={item.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => navigation?.navigate('AlbumScreen', { albumId: item.id })}>
          <View className="w-16 h-16 rounded-sm mr-3 justify-center">
             {currentPlaylistId === item?.id && <SpinningLoader className="absolute" tintColor="#E36526" />}
 
