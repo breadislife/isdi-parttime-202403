@@ -37,7 +37,7 @@ const AlbumScreen = ({ route }) => {
    // TODO: create skeleton loader/placeholder ui of this screen
    return (
       <View className="flex-1 bg-palette-90">
-         {!loading && albumInfo && <AlbumTrackList className="top-0" items={albumInfo.tracks} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<AlbumHeader item={albumInfo} />} />}
+         {!loading && albumInfo && <AlbumTrackList className="top-0" items={albumInfo.tracks} playlistId={albumId} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<AlbumHeader item={albumInfo} />} />}
 
          {loading && !albumInfo && (
             <View className="flex-1 justify-center items-center">

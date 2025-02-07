@@ -5,12 +5,12 @@ import SpinningLoader from '../loaders/SpinningLoader';
 import { ItemIcons } from '../../../assets/images/icons';
 import formatSeconds from '../../utils/formatSeconds';
 
-const PlaylistTrackItem = ({ item, onMore }) => {
+const PlaylistTrackItem = ({ item, onMore, playlist, index, playlistId }) => {
    const { currentTrackId } = useTrackStore();
    const { handlePlay } = usePlayerHandlers();
 
    return (
-      <Pressable key={item?.id} className="flex-row items-start w-[90%] p-3 active:opacity-70 bg-palette-80 self-center rounded-lg mb-1.5" onPress={() => handlePlay(item)}>
+      <Pressable key={item?.id} className="flex-row items-start w-[90%] p-3 active:opacity-70 bg-palette-80 self-center rounded-lg mb-1.5" onPress={() => handlePlay(item, playlist, index, playlistId)}>
          <View className="w-16 h-16 rounded-sm mr-3 justify-center">
             {currentTrackId === item?.id && <SpinningLoader className="absolute" tintColor="#E36526" />}
 
