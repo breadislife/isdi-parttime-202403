@@ -12,6 +12,7 @@ import followUserHandler from './user/followUser.js';
 import getUserInfoHandler from './user/getUserInfo.js';
 
 import getPlaylistInfoHandler from './playlist/getPlaylistInfo.js';
+import followPlaylistHandler from './playlist/followPlaylist.js';
 
 import getAlbumInfoHandler from './album/getAlbumInfo.js';
 
@@ -30,6 +31,7 @@ export default {
    getUserInfoHandler,
 
    getPlaylistInfoHandler,
+   followPlaylistHandler,
 
    getAlbumInfoHandler
 };
