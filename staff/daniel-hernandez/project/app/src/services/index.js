@@ -13,22 +13,29 @@ import followUser from './user/followUser';
 import getUserInfo from './user/getUserInfo';
 
 import getPlaylistInfo from './playlist/getPlaylistInfo';
+import followPlaylist from './playlist/followPlaylist';
 
 import getAlbumInfo from './album/getAlbumInfo';
 
-export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, getAlbumInfo };
+export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, followPlaylist, getAlbumInfo };
 
 export default {
    signIn,
    signUp,
    signOut,
    checkEmail,
+
    search,
    storage,
+
    playback,
    player,
+
    followUser,
    getUserInfo,
+
    getPlaylistInfo,
+   followPlaylist,
+
    getAlbumInfo
 };
