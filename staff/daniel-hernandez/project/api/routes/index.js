@@ -6,6 +6,7 @@ import playerRouter from './player.js';
 import userRouter from './user.js';
 import playlistRouter from './playlist.js';
 import albumRouter from './album.js';
+import trackRouter from './track.js';
 
 export default {
    authRouter,
@@ -15,5 +16,6 @@ export default {
    playerRouter,
    userRouter,
    playlistRouter,
-   albumRouter
+   albumRouter,
+   trackRouter
 };

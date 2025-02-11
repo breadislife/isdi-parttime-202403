@@ -16,6 +16,8 @@ import followPlaylistHandler from './playlist/followPlaylist.js';
 
 import getAlbumInfoHandler from './album/getAlbumInfo.js';
 
+import getRecentPlaysHandler from './track/getRecentPlays.js';
+
 export default {
    loginHandler,
    registerHandler,
@@ -33,5 +35,7 @@ export default {
    getPlaylistInfoHandler,
    followPlaylistHandler,
 
-   getAlbumInfoHandler
+   getAlbumInfoHandler,
+
+   getRecentPlaysHandler
 };
