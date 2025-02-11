@@ -21,7 +21,7 @@ const followPlaylist = playlistId => {
       try {
          res = await fetch(`${Config.API_URL}/api/v1/playlist/follow/${playlistId}`, {
             method: 'PATCH',
-            headers: { Authorization: `Bearer: ${userToken}` }
+            headers: { Authorization: `Bearer ${userToken}` }
          });
       } catch (error) {
          throw new FetchError(`Fetch failed: ${error.message}`);

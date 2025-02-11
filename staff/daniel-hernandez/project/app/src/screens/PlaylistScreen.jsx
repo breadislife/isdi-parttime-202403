@@ -6,6 +6,7 @@ import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
 import PlaylistHeader from '../components/PlaylistHeader';
 import PlaylistTrackList from '../components/lists/PlaylistTrackList';
+import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
 const PlaylistScreen = ({ route }) => {
@@ -34,10 +35,33 @@ const PlaylistScreen = ({ route }) => {
       }
    }, [playlistId, notify]);
 
+   const toggleFollowStatus = useCallback(prevInfo => {
+      const updatedInfo = { ...prevInfo };
+      const following = updatedInfo.isFollowed;
+
+      return {
+         ...updatedInfo,
+         isFollowed: !following,
+         followers: following ? parseInt(updatedInfo.followers) - 1 : parseInt(updatedInfo.followers) + 1
+      };
+   });
+
+   const handleFollow = async id => {
+      trigger('impactMedium');
+      setPlaylistInfo(prevInfo => toggleFollowStatus(prevInfo));
+
+      try {
+         await services.followPlaylist(id);
+      } catch {
+         notify('Something went wrong...', notificationTypes.error);
+         setPlaylistInfo(prevInfo => toggleFollowStatus(prevInfo));
+      }
+   };
+
    // TODO: create skeleton loader/placeholder ui of this screen
    return (
       <View className="flex-1 bg-palette-90">
-         {!loading && playlistInfo && <PlaylistTrackList className="top-0" items={playlistInfo.tracks} playlistId={playlistId} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<PlaylistHeader item={playlistInfo} />} />}
+         {!loading && playlistInfo && <PlaylistTrackList className="top-0" items={playlistInfo.tracks} playlistId={playlistId} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<PlaylistHeader item={playlistInfo} onAdd={handleFollow} />} />}
 
          {loading && !playlistInfo && (
             <View className="flex-1 justify-center items-center">
