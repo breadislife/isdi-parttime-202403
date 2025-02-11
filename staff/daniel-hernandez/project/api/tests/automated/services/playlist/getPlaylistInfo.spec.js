@@ -99,6 +99,101 @@ describe('getPlaylistInfo', () => {
                }
             }
          ],
+         isFollowed: false,
+         followers: playlist.followers.toString()
+      });
+
+      const logEntry = await expect(Log.findOne({ type: constants.VIEWED_USER_PLAYLISTS })).to.eventually.be.a('object');
+      expect(logEntry).to.exist;
+      expect(logEntry.user.toString()).to.equal(user.id);
+      expect(logEntry.type).to.equal(constants.VIEWED_USER_PLAYLISTS);
+      expect(logEntry.playlist.toString()).to.equal(playlist.id);
+   });
+
+   it('includes correct isFollowed status when user follows the playlist', async () => {
+      const hash = await bcrypt.hash('Neon-Genesis02', 8);
+      const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash, profileImage: 'http' });
+
+      const [track1, track2] = await Promise.all([
+         await Track.create({
+            name: 'Brand New Dance',
+            addedBy: user._id,
+            artists: [user._id],
+            duration: 195.6,
+            genre: 'Hip Hop',
+            releaseDate: new Date(2024, 7, 12)
+         }),
+         await Track.create({
+            name: 'Aftermath (The Intro)',
+            addedBy: user._id,
+            artists: [user._id],
+            duration: 150.6,
+            genre: 'Hip Hop',
+            releaseDate: new Date(1996, 11, 26)
+         })
+      ]);
+
+      const playlist = await Playlist.create({
+         name: 'A Playlist',
+         description: 'A great playlist',
+         public: true,
+         owner: user._id,
+         tracks: [track1._id, track2._id],
+         followers: 10,
+         coverArt: 'http'
+      });
+
+      const album = await Album.create({
+         name: 'The Death of Slim Shady (Coup De Grace)',
+         type: 'album',
+         artists: [user._id],
+         releaseDate: new Date(2024, 7, 12),
+         tracks: [track1._id, track2._id]
+      });
+
+      user.followingPlaylists.push(playlist._id);
+      track1.album = album._id;
+      track2.album = album._id;
+      await Promise.all([track1.save(), track2.save(), user.save()]);
+
+      const result = await expect(getPlaylistInfo(user.id, playlist.id)).to.be.fulfilled.and.eventually.be.a('object');
+
+      expect(result).to.deep.equal({
+         id: playlist.id,
+         name: playlist.name,
+         description: playlist.description,
+         public: playlist.public,
+         coverArt: playlist.coverArt,
+         owner: {
+            id: user.id,
+            username: user.username,
+            profileImage: user.profileImage
+         },
+         tracks: [
+            {
+               id: track1.id,
+               name: track1.name,
+               artists: [{ id: user.id, username: user.username }],
+               duration: track1.duration.toString(),
+               coverArt: track1.coverArt,
+               album: {
+                  id: album.id,
+                  name: album.name
+               }
+            },
+            {
+               id: track2.id,
+               name: track2.name,
+               artists: [{ id: user.id, username: user.username }],
+               duration: track2.duration.toString(),
+               coverArt: track2.coverArt,
+               album: {
+                  id: album.id,
+                  name: album.name
+               }
+            }
+         ],
+         isFollowed: true,
          followers: playlist.followers.toString()
       });
 

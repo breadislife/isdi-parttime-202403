@@ -47,8 +47,11 @@ const getPlaylistInfo = (userId, playlistId) => {
          throw new NotFoundError('Playlist not found or not public');
       }
 
+      const isFollowed = user.followingPlaylists.some(followedId => followedId.equals(playlist._id));
+
       // Transform the playlist document
       const transformedDocument = transformDocument(playlist);
+      transformedDocument.isFollowed = isFollowed;
 
       try {
          await log(userId, constants.VIEWED_USER_PLAYLISTS, playlistId, constants.types[2]);
