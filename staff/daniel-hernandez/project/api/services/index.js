@@ -15,6 +15,8 @@ import followPlaylist from './playlist/followPlaylist.js';
 
 import getAlbumInfo from './album/getAlbumInfo.js';
 
+import getRecentPlays from './track/getRecentPlays.js';
+
 export default {
    login,
    register,
@@ -31,5 +33,7 @@ export default {
    getPlaylistInfo,
    followPlaylist,
 
-   getAlbumInfo
+   getAlbumInfo,
+
+   getRecentPlays
 };
