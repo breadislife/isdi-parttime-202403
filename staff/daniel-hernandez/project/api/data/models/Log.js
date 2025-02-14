@@ -7,7 +7,8 @@ const LogSchema = new Schema(
       user: {
          type: ObjectId,
          ref: 'User',
-         required: true
+         required: true,
+         index: true
       },
       type: {
          type: String,

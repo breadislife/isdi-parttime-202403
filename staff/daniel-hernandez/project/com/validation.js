@@ -89,7 +89,7 @@ function validateLogType(type) {
 }
 
 function validateTargetType(type) {
-   if (!constants.types.includes(type)) {
+   if (!Object.values(constants.types).includes(type)) {
       throw new InvalidArgumentError('Invalid target type');
    }
 }
@@ -99,10 +99,10 @@ function validateQueryTypes(types) {
       throw new InvalidArgumentError('Expected an array of query types');
    }
 
-   const validTypes = [...constants.queryTypes];
+   const validTypes = new Set(Object.values(constants.queryTypes));
 
    for (const type of types) {
-      if (!validTypes.includes(type)) {
+      if (!validTypes.has(type)) {
          throw new InvalidArgumentError('Invalid query type within array');
       }
    }

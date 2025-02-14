@@ -33,10 +33,12 @@ const UserSchema = new Schema(
          default: ''
          /* match ? */
       },
+      /* FIX: Consider a separate Like collection for scalability */
       likedTracks: [
          {
             type: ObjectId,
-            ref: 'Track'
+            ref: 'Track',
+            index: true
          }
       ],
       likedAlbums: [

@@ -1,5 +1,3 @@
-const types = ['targetUser', 'track', 'playlist', 'album', 'query', 'targetId'];
-const queryTypes = ['user', 'track', 'playlist', 'album'];
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
 const LOGGED_IN = 'logged_in';
@@ -42,7 +40,22 @@ const VIEWED_USER_CREATED_PLAYLISTS = 'viewed_user_created_playlists';
 const VIEWED_USER_CREATED_TRACKS = 'viewed_user_created_tracks';
 const VIEWED_USER_CREATED_ALBUMS = 'viewed_user_created_albums';
 const VIEWED_USER_PROFILE = 'viewed_user_profile';
+const types = {
+   TARGET_USER: 'targetUser',
+   TRACK: 'track',
+   PLAYLIST: 'playlist',
+   ALBUM: 'album',
+   QUERY: 'query',
+   TARGET_ID: 'targetId'
+};
+const queryTypes = {
+   USER: 'user',
+   TRACK: 'track',
+   PLAYLIST: 'playlist',
+   ALBUM: 'album'
+};
 
+// TODO: improve organization: group related constants
 export default {
    types,
    queryTypes,
