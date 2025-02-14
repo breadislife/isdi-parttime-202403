@@ -74,6 +74,8 @@ function validateLogType(type) {
       constants.SHARED_TRACK,
       constants.SHARED_PLAYLIST,
       constants.VIEWED_USER_PLAYLISTS,
+      constants.VIEWED_USER_RECENT_PLAYS,
+      constants.VIEWED_CURATED_PLAYLISTS,
       constants.VIEWED_USER_FOLLOWERS,
       constants.VIEWED_USER_FOLLOWING,
       constants.VIEWED_USER_LIKED_TRACKS,

@@ -33,6 +33,8 @@ const MANAGED_OFFLINE_STORAGE = 'managed_offline_storage';
 const SHARED_TRACK = 'shared_track';
 const SHARED_PLAYLIST = 'shared_playlist';
 const VIEWED_USER_PLAYLISTS = 'viewed_user_playlists';
+const VIEWED_USER_RECENT_PLAYS = 'viewed_user_recent_plays';
+const VIEWED_CURATED_PLAYLISTS = 'viewed_curated_playlists';
 const VIEWED_USER_FOLLOWERS = 'viewed_user_followers';
 const VIEWED_USER_FOLLOWING = 'viewed_user_following';
 const VIEWED_USER_LIKED_TRACKS = 'viewed_user_liked_tracks';
@@ -94,6 +96,8 @@ export default {
    SHARED_TRACK,
    SHARED_PLAYLIST,
    VIEWED_USER_PLAYLISTS,
+   VIEWED_USER_RECENT_PLAYS,
+   VIEWED_CURATED_PLAYLISTS,
    VIEWED_USER_FOLLOWERS,
    VIEWED_USER_FOLLOWING,
    VIEWED_USER_LIKED_TRACKS,

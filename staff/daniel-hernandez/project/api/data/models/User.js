@@ -33,7 +33,7 @@ const UserSchema = new Schema(
          default: ''
          /* match ? */
       },
-      /* FIX: Consider a separate Like collection for scalability */
+      /* TODO: Consider a separate Like collection for scalability */
       likedTracks: [
          {
             type: ObjectId,
