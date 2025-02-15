@@ -54,7 +54,7 @@ const player = (userId, trackId) => {
       }
 
       try {
-         await log(userId, constants.REQUESTED_TRACK, trackId, constants.types[1]);
+         await log(userId, constants.REQUESTED_TRACK, trackId, constants.types.TRACK);
       } catch (error) {
          throw new SystemError(`Fetching player information failed: ${error.message}`);
       }

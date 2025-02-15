@@ -50,7 +50,7 @@ const getAlbumInfo = (userId, albumId) => {
       const transformedDocument = transformDocument(album);
 
       try {
-         await log(userId, constants.VIEWED_USER_CREATED_ALBUMS, albumId, constants.types[3]);
+         await log(userId, constants.VIEWED_USER_CREATED_ALBUMS, albumId, constants.types.ALBUM);
       } catch (error) {
          throw new SystemError(`Album logging failed: ${error.message}`);
       }

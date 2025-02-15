@@ -31,7 +31,7 @@ const query = (userId, query, types = [], limit = constants.DEFAULT_LIMIT, page 
 
       const { likedTracks, likedAlbums, followingPlaylists, following } = user;
       const skip = (page - 1) * limit;
-      const queryTypes = types.length === 0 ? [...constants.queryTypes] : types;
+      const queryTypes = types.length === 0 ? [...Object.values(constants.queryTypes)] : types;
 
       // Normalize query: remove spaces, special characters, and convert to lowercase
       const normalizedQuery = query.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();

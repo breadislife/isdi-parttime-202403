@@ -45,7 +45,7 @@ const followUser = (userId, targetUserId) => {
       }
 
       try {
-         await log(userId, following ? constants.UNFOLLOWED_USER : constants.FOLLOWED_USER, targetUserId, constants.types[0]);
+         await log(userId, following ? constants.UNFOLLOWED_USER : constants.FOLLOWED_USER, targetUserId, constants.types.TARGET_USER);
       } catch (error) {
          throw new SystemError(`Follow failed: ${error.message}`);
       }

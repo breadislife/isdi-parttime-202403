@@ -85,7 +85,7 @@ const stream = (userId, trackId, range) => {
       };
 
       try {
-         await log(userId, constants.PLAYED_TRACK, trackId, constants.types[1]);
+         await log(userId, constants.PLAYED_TRACK, trackId, constants.types.TRACK);
       } catch (error) {
          throw new SystemError(`Streaming the track failed: ${error.message}`);
       }

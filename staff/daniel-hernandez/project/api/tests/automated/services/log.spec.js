@@ -21,7 +21,7 @@ describe('log', () => {
       const hash = await bcrypt.hash('Neon-Genesis02', 8);
       const [user1, user2] = await Promise.all([User.create({ username: 'eva01', email: 'shinji@ikari.com', passwordHash: hash }), User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash })]);
 
-      await expect(log(user1.id, constants.FOLLOWED_USER, user2.id, constants.types[0])).to.be.fulfilled;
+      await expect(log(user1.id, constants.FOLLOWED_USER, user2.id, constants.types.TARGET_USER)).to.be.fulfilled;
 
       const logEntry = await expect(Log.findOne({ type: constants.FOLLOWED_USER })).to.eventually.be.a('object');
       expect(logEntry).to.not.be.null;
@@ -35,7 +35,7 @@ describe('log', () => {
       const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash });
       const track = await Track.create({ name: 'summertime_2007', addedBy: user.id, duration: 138.6 });
 
-      await expect(log(user.id, constants.CREATED_TRACK, track.id, constants.types[1])).to.be.fulfilled;
+      await expect(log(user.id, constants.CREATED_TRACK, track.id, constants.types.TRACK)).to.be.fulfilled;
 
       const logEntry = await expect(Log.findOne({ type: constants.CREATED_TRACK })).to.eventually.be.a('object');
       expect(logEntry).to.not.be.null;
@@ -49,7 +49,7 @@ describe('log', () => {
       const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash });
       const playlist = await Playlist.create({ name: 'Neon Genesis', owner: user.id });
 
-      await expect(log(user.id, constants.CREATED_PLAYLIST, playlist.id, constants.types[2])).to.be.fulfilled;
+      await expect(log(user.id, constants.CREATED_PLAYLIST, playlist.id, constants.types.PLAYLIST)).to.be.fulfilled;
 
       const logEntry = await expect(Log.findOne({ type: constants.CREATED_PLAYLIST })).to.eventually.be.a('object');
       expect(logEntry).to.not.be.null;
@@ -64,7 +64,7 @@ describe('log', () => {
       const track = await Track.create({ name: 'Brand New Dance', addedBy: user.id, artists: [user.id], duration: 195.6 });
       const album = await Album.create({ name: 'The Death of Slim Shady (Coup De Grace)', artists: [user.id], releaseDate: new Date(2024, 6, 12), tracks: [track.id], type: 'album' });
 
-      await expect(log(user.id, constants.FOLLOWED_ALBUM, album.id, constants.types[3])).to.be.fulfilled;
+      await expect(log(user.id, constants.FOLLOWED_ALBUM, album.id, constants.types.ALBUM)).to.be.fulfilled;
 
       const logEntry = await expect(Log.findOne({ type: constants.FOLLOWED_ALBUM })).to.eventually.be.a('object');
       expect(logEntry).to.not.be.null;
@@ -171,7 +171,7 @@ describe('log', () => {
       const hash = await bcrypt.hash('Neon-Genesis02', 8);
       const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash });
 
-      expect(() => log(user.id, constants.CREATED_TRACK, '', constants.types[1])).to.throw(InvalidArgumentError, 'No targetType or targetId');
+      expect(() => log(user.id, constants.CREATED_TRACK, '', constants.types.TRACK)).to.throw(InvalidArgumentError, 'No targetType or targetId');
    });
 
    it('fails when provided all but the target type', async () => {
@@ -186,7 +186,7 @@ describe('log', () => {
       const hash = await bcrypt.hash('Neon-Genesis02', 8);
       const user = await User.create({ username: 'eva02', email: 'asuka@soryu.com', passwordHash: hash });
 
-      expect(() => log(user.id, constants.CREATED_TRACK, 1, constants.types[1])).to.throw(InvalidArgumentError, 'Invalid ObjectId');
+      expect(() => log(user.id, constants.CREATED_TRACK, 1, constants.types.TRACK)).to.throw(InvalidArgumentError, 'Invalid ObjectId');
    });
 
    it('fails when the target type is invalid', async () => {

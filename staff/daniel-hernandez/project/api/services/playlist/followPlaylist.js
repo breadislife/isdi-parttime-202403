@@ -56,7 +56,7 @@ const followPlaylist = (userId, targetPlaylistId) => {
       }
 
       try {
-         await log(userId, following ? constants.UNFOLLOWED_PLAYLIST : constants.FOLLOWED_PLAYLIST, targetPlaylistId, constants.types[2]);
+         await log(userId, following ? constants.UNFOLLOWED_PLAYLIST : constants.FOLLOWED_PLAYLIST, targetPlaylistId, constants.types.PLAYLIST);
       } catch (error) {
          throw new SystemError(`Playlist follow failed: ${error.message}`);
       }

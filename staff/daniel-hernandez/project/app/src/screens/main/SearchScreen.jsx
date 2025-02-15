@@ -13,7 +13,7 @@ import constants from 'com/constants';
 
 import { TabIcons } from '../../../assets/images/icons';
 
-const DEFAULT_PILL = { label: 'All', queryType: [...constants.queryTypes], limit: 8 };
+const DEFAULT_PILL = { label: 'All', queryType: [...Object.values(constants.queryTypes)], limit: 8 };
 
 // TODO: refactor and componentize
 // TODO: add caching to results
@@ -94,7 +94,7 @@ const SearchScreen = () => {
       if (!query.trim()) return;
 
       try {
-         const response = await services.search(query, [constants.queryTypes[0]], selectedPill.limit, page);
+         const response = await services.search(query, [constants.queryTypes.USER], selectedPill.limit, page);
 
          const updatedResults = { ...results };
          if (response.users) updatedResults.users = response.users;
@@ -286,7 +286,7 @@ const SearchScreen = () => {
             {status.queryDone && query && !status.loading && (
                <PillBar
                   pills={[
-                     { label: 'All', onPress: handlePillPress, queryType: [...constants.queryTypes], limit: 8 },
+                     { label: 'All', onPress: handlePillPress, queryType: [...Object.values(constants.queryTypes)], limit: 8 },
                      { label: 'Users', onPress: handlePillPress, queryType: ['user'], limit: constants.DEFAULT_LIMIT },
                      { label: 'Tracks', onPress: handlePillPress, queryType: ['track'], limit: constants.DEFAULT_LIMIT },
                      { label: 'Playlists', onPress: handlePillPress, queryType: ['playlist'], limit: constants.DEFAULT_LIMIT },

@@ -104,7 +104,7 @@ const getUserInfo = (userId, targetUserId) => {
       playlists = playlists.map(transformDocument);
 
       try {
-         await log(userId, constants.VIEWED_USER_PROFILE, targetUserId, constants.types[0]);
+         await log(userId, constants.VIEWED_USER_PROFILE, targetUserId, constants.types.TARGET_USER);
       } catch (error) {
          throw new SystemError(`Fetching user info failed: ${error.message}`);
       }

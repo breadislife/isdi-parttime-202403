@@ -54,7 +54,7 @@ const getPlaylistInfo = (userId, playlistId) => {
       transformedDocument.isFollowed = isFollowed;
 
       try {
-         await log(userId, constants.VIEWED_USER_PLAYLISTS, playlistId, constants.types[2]);
+         await log(userId, constants.VIEWED_USER_PLAYLISTS, playlistId, constants.types.PLAYLIST);
       } catch (error) {
          throw new SystemError(`Playlist logging failed: ${error.message}`);
       }

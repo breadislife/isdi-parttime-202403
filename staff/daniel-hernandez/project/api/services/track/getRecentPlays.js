@@ -43,9 +43,7 @@ const getRecentPlays = userId => {
       const recentTracks = transformDocument(recentPlays);
 
       try {
-         // NOTE: Recent plays are being treated similarly to liked tracks (not ideal)
-         // TODO: add a 'VIEWED_USER_RECENT_PLAYS' constant for added clarity
-         await log(userId, constants.VIEWED_USER_LIKED_TRACKS);
+         await log(userId, constants.VIEWED_USER_RECENT_PLAYS);
       } catch (error) {
          throw new SystemError(`Failed to get recent plays: ${error.message}`);
       }
