@@ -16,6 +16,7 @@ import followPlaylist from './playlist/followPlaylist.js';
 import getAlbumInfo from './album/getAlbumInfo.js';
 
 import getRecentPlays from './track/getRecentPlays.js';
+import likeTrack from './track/likeTrack.js';
 
 export default {
    login,
@@ -35,5 +36,6 @@ export default {
 
    getAlbumInfo,
 
-   getRecentPlays
+   getRecentPlays,
+   likeTrack
 };

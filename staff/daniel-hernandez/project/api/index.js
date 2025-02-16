@@ -9,6 +9,7 @@ const api = express();
 const { PORT, MONGO_URI } = process.env;
 
 api.use([express.json(), cors()]);
+// TODO: Create rate limiting middleware
 
 api.use('/api/v1/auth', routes.authRouter);
 api.use('/api/v1/logs', verifyToken, routes.logRouter);
