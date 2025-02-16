@@ -10,7 +10,8 @@
       "test": "mocha tests/**/*.spec.js",
       "debug": "node --inspect-brk .",
       "debug-test": "mocha --inspect-brk tests/**/*.spec.js",
-      "test-coverage": "c8 --experimental-monocart --reporter=html --reporter=text mocha tests/**/*.spec.js"
+      "test-coverage": "c8 --experimental-monocart --reporter=html --reporter=text mocha tests/**/*.spec.js",
+      "populate": "node data/populate/index.js"
    },
    "keywords": [],
    "author": "",

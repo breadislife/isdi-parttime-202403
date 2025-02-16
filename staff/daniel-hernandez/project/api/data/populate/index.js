@@ -205,12 +205,16 @@ async function downloadTracks(albums) {
 }
 
 async function populateDatabase(album) {
-   let dev;
+   let dev, populator;
    try {
-      dev = await User.findOne({ username: 'developer' });
+      [dev, populator] = await Promise.all([User.findOne({ username: 'developer' }), User.findOne({ username: 'populator' })]);
 
       if (!dev) {
          dev = await User.create({ username: 'developer', passwordHash: await bcrypt.hash(DEV_PASSWORD, 8), email: 'dev@e.c' });
+      }
+
+      if (!populator) {
+         populator = await User.create({ username: 'populator', passwordHash: await bcrypt.hash(DEV_PASSWORD, 8), email: 'pop@e.c' });
       }
    } catch {
       throw new SystemError("Couldn't initialize dev account");
@@ -321,7 +325,7 @@ async function populateDatabase(album) {
 
          const track = new Track({
             name: _track.name,
-            addedBy: dev._id,
+            addedBy: populator._id,
             artists: trackArtistIds,
             album: _album._id,
             duration: _track.duration,
