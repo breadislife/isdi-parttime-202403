@@ -50,7 +50,8 @@ const UserSchema = new Schema(
       followingPlaylists: [
          {
             type: ObjectId,
-            ref: 'Playlist'
+            ref: 'Playlist',
+            index: true
          }
       ],
       following: [

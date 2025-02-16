@@ -124,5 +124,7 @@ const LogSchema = new Schema(
    { timestamps: true }
 );
 
+LogSchema.index({ user: 1, type: 1, track: 1, createdAt: -1 });
+
 const Log = model('Log', LogSchema);
 export default Log;

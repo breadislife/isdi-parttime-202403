@@ -57,5 +57,7 @@ const TrackSchema = new Schema(
    { timestamps: true }
 );
 
+TrackSchema.index({ genre: 1, releaseDate: 1 });
+
 const Track = model('Track', TrackSchema);
 export default Track;
