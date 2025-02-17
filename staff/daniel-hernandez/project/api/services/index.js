@@ -18,6 +18,8 @@ import getAlbumInfo from './album/getAlbumInfo.js';
 import getRecentPlays from './track/getRecentPlays.js';
 import likeTrack from './track/likeTrack.js';
 
+import getCuratedLists from './list/getCuratedLists.js';
+
 export default {
    login,
    register,
@@ -37,5 +39,7 @@ export default {
    getAlbumInfo,
 
    getRecentPlays,
-   likeTrack
+   likeTrack,
+
+   getCuratedLists
 };

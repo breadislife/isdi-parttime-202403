@@ -19,6 +19,8 @@ import getAlbumInfoHandler from './album/getAlbumInfo.js';
 import getRecentPlaysHandler from './track/getRecentPlays.js';
 import likeTrackHandler from './track/likeTrack.js';
 
+import getCuratedListsHandler from './list/getCuratedLists.js';
+
 export default {
    loginHandler,
    registerHandler,
@@ -39,5 +41,7 @@ export default {
    getAlbumInfoHandler,
 
    getRecentPlaysHandler,
-   likeTrackHandler
+   likeTrackHandler,
+
+   getCuratedListsHandler
 };
