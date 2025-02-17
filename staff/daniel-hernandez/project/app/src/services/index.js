@@ -17,7 +17,9 @@ import followPlaylist from './playlist/followPlaylist';
 
 import getAlbumInfo from './album/getAlbumInfo';
 
-export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, followPlaylist, getAlbumInfo };
+import getRecentPlays from './track/getRecentPlays';
+
+export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, followPlaylist, getAlbumInfo, getRecentPlays };
 
 export default {
    signIn,
@@ -37,5 +39,7 @@ export default {
    getPlaylistInfo,
    followPlaylist,
 
-   getAlbumInfo
+   getAlbumInfo,
+
+   getRecentPlays
 };
