@@ -20,7 +20,9 @@ import getAlbumInfo from './album/getAlbumInfo';
 import getRecentPlays from './track/getRecentPlays';
 import likeTrack from './track/likeTrack';
 
-export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, followPlaylist, getAlbumInfo, getRecentPlays, likeTrack };
+import getCuratedLists from './list/getCuratedLists';
+
+export { signIn, signUp, signOut, checkEmail, search, storage, playback, player, followUser, getUserInfo, getPlaylistInfo, followPlaylist, getAlbumInfo, getRecentPlays, likeTrack, getCuratedLists };
 
 export default {
    signIn,
@@ -43,5 +45,7 @@ export default {
    getAlbumInfo,
 
    getRecentPlays,
-   likeTrack
+   likeTrack,
+
+   getCuratedLists
 };
