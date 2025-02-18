@@ -15,17 +15,18 @@ export const playback = () => {
    });
 
    TrackPlayer.addEventListener(Event.RemoteNext, async () => {
-      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
-      if (!currentPlaylist || currentTrackIndex === null || !currentPlaylistId) return;
-      
-      const nextIndex = currentTrackIndex + 1;
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId, currentTrackId } = useTrackStore.getState();
+      if (!currentPlaylist || currentTrackIndex === null || !currentPlaylistId || !currentTrackId) return;
+
+      const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
+      if (currentIndex === -1) return;
+     
+      const nextIndex = currentIndex + 1;
       if (nextIndex >= currentPlaylist.length) return;
       const nextTrack = currentPlaylist[nextIndex];
 
       let info;
-      try {
-         info = await player(nextTrack.id);
-      } catch {}
+      try { info = await player(nextTrack.id); } catch {}
 
       try {
          await TrackPlayer.load({
@@ -43,13 +44,11 @@ export const playback = () => {
 
       useTrackStore.setState({ currentTrackId: nextTrack.id, currentTrackIndex: nextIndex });
 
-      try {
-         await TrackPlayer.play();
-      } catch {}
+      try { await TrackPlayer.play(); } catch {}
    });
 
    TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
-      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId, currentTrackId } = useTrackStore.getState();
       const { position } = await TrackPlayer.getProgress();
 
       if (position > 3) {
@@ -57,15 +56,15 @@ export const playback = () => {
          return;
       }
 
-      if (!currentPlaylist || currentTrackIndex === null || currentTrackIndex <=0 || !currentPlaylistId) return;
+      if (!currentPlaylist || currentTrackIndex === null || currentTrackIndex <=0 || !currentPlaylistId || !currentTrackId) return;
 
-      const prevIndex = currentTrackIndex - 1;
+      const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
+
+      const prevIndex = currentIndex - 1;
       const prevTrack = currentPlaylist[prevIndex];
 
       let info;
-      try {
-         info = await player(prevTrack.id);
-      } catch {}
+      try { info = await player(prevTrack.id); } catch {}
 
       try {
          await TrackPlayer.load({
@@ -83,9 +82,7 @@ export const playback = () => {
 
       useTrackStore.setState({ currentTrackId: prevTrack.id, currentTrackIndex: prevIndex });
 
-      try {
-         await TrackPlayer.play();
-      } catch {}
+      try { await TrackPlayer.play(); } catch {}
    });
 
    TrackPlayer.addEventListener(Event.RemoteJumpForward, async event => {
@@ -105,7 +102,15 @@ export const playback = () => {
       storage.delete(Config.CURRENT_TRACK_KEY);
       storage.delete(Config.TRACK_PROGRESS_KEY);
 
-      const { currentPlaylist, currentTrackIndex } = useTrackStore.getState();
+      const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+
+      if (currentPlaylistId?.startsWith('dynamic-')) {
+         // Clear dynamic playlist data
+         storage.delete(Config.CURRENT_PLAYLIST_KEY);
+         storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
+         storage.delete(Config.CURRENT_PLAYLIST_ID_KEY);
+      }
+
       if (currentPlaylist && currentTrackIndex !== null) {
          const nextIndex = currentTrackIndex + 1;
 
@@ -168,7 +173,7 @@ export const playback = () => {
       }
 
       const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
-      if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId) {
+      if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && !currentPlaylistId?.startsWith('dynamic-')) {
          let playlist;
 
          try {

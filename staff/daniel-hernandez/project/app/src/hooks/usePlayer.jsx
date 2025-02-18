@@ -243,10 +243,13 @@ const usePlayer = () => {
 
    const skipToNext = useCallback(async () => {
       try {
-         const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+         const { currentPlaylist, currentTrackIndex, currentPlaylistId, currentTrackId } = useTrackStore.getState();
 
-         if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex < currentPlaylist.length - 1) {
-            const nextIndex = currentTrackIndex + 1;
+         if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex < currentPlaylist.length - 1 && currentTrackId) {
+            const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
+            if (currentIndex === -1) return;
+
+            const nextIndex = currentIndex + 1;
             const requestId = Date.now();
 
             useTrackStore.setState(state => ({ ...state, currentTrackIndex: nextIndex, playRequest: requestId }));
@@ -260,13 +263,15 @@ const usePlayer = () => {
 
    const skipToPrevious = useCallback(async () => {
       try {
-         const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
+         const { currentPlaylist, currentTrackIndex, currentPlaylistId, currentTrackId } = useTrackStore.getState();
          const { position } = await TrackPlayer.getProgress();
 
          if (position > 3) {
             await TrackPlayer.seekTo(0);
-         } else if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex > 0) {
-            const prevIndex = currentTrackIndex - 1;
+         } else if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && currentTrackIndex > 0 && currentTrackId) {
+            const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
+
+            const prevIndex = currentIndex - 1;
             const requestId = Date.now();
 
             useTrackStore.setState(state => ({ ...state, playRequest: requestId }));
