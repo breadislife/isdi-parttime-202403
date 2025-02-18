@@ -19,7 +19,7 @@ const TabNavigator = () => (
          unmountOnBlur={true}
          initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
          screenOptions={({ route }) => ({
-            lazy: true,
+            lazy: false,
             headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
                let iconSource;
