@@ -1,12 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text } from 'react-native';
+import Config from 'react-native-config';
 import SpinningLoader from '../../components/loaders/SpinningLoader';
 import RetryButton from '../../components/buttons/RetryButton';
 import HomeTrackList from '../../components/lists/HomeTrackList';
 import RefreshableScrollView from '../../components/RefreshableScrollView';
+import DynamicPlaylistList from '../../components/lists/DynamicPlaylistList';
 import { useTrackStore } from '../../store/track';
 import useNotification from '../../hooks/useNotification';
 import services from '../../services';
+import generateBasicId from '../../utils/generateBasicId';
 
 const HomeScreen = () => {
    const { notify, notificationTypes } = useNotification();
@@ -26,28 +29,88 @@ const HomeScreen = () => {
          const [curatedResponse, recentResponse] = await Promise.all([services.getCuratedLists(), services.getRecentPlays()]);
 
          const { currentTrackId, currentPlaylistId } = useTrackStore.getState();
+         // Handle recent and most played ids
+         let newRecentId, newMostPlayedId, newLikedTracksId, newFollowedMixId, newDiscoverWeeklyId;
 
-         // Determine if we should preserve playlistId
-         let newPlaylistId;
-         const currentTrackExists = recentResponse?.tracks.some(t => t.id === currentTrackId);
+         // Handle recent played tracks playlist id
+         const recentTrackExists = recentResponse?.tracks?.some(t => t.id === currentTrackId);
+         newRecentId = currentPlaylistId?.startsWith(Config.RECENT_TRACKS_DYNAMIC_PREFIX) && recentTrackExists ? currentPlaylistId : generateBasicId(Config.RECENT_TRACKS_DYNAMIC_PREFIX);
 
-         if (currentPlaylistId?.startsWith('dynamic-') && currentTrackExists) {
-            // Preserve playlist id if playing track still exists in new list
-            newPlaylistId = currentPlaylistId;
+         // Handle most played tracks playlist id
+         const mostPlayedTrackExists = curatedResponse?.mostPlayed?.tracks?.some(t => t.id === currentTrackId);
+         newMostPlayedId = currentPlaylistId?.startsWith(Config.MOST_PLAYED_DYNAMIC_PREFIX) && mostPlayedTrackExists ? currentPlaylistId : generateBasicId(Config.MOST_PLAYED_DYNAMIC_PREFIX);
 
-            // Update playlist and index in store
+         // Handle liked tracks playlist id
+         const likedTracksTrackExists = curatedResponse?.likedTracks?.tracks?.some(t => t.id === currentTrackId);
+         newLikedTracksId = currentPlaylistId?.startsWith(Config.LIKED_TRACKS_DYNAMIC_PREFIX) && likedTracksTrackExists ? currentPlaylistId : generateBasicId(Config.LIKED_TRACKS_DYNAMIC_PREFIX);
+
+         // Handle followed mix playlist id
+         const followedMixTrackExists = curatedResponse?.followedMix?.tracks?.some(t => t.id === currentTrackId);
+         newFollowedMixId = currentPlaylistId?.startsWith(Config.FOLLOWED_MIX_DYNAMIC_PREFIX) && followedMixTrackExists ? currentPlaylistId : generateBasicId(Config.FOLLOWED_MIX_DYNAMIC_PREFIX);
+
+         const discoverWeeklyTrackExists = curatedResponse?.discoverWeekly?.tracks?.some(t => t.id === currentTrackId);
+         newDiscoverWeeklyId = currentPlaylistId?.startsWith(Config.DISCOVER_WEEKLY_DYNAMIC_PREFIX) && discoverWeeklyTrackExists ? currentPlaylistId : generateBasicId(Config.DISCOVER_WEEKLY_DYNAMIC_PREFIX);
+
+         // Update state
+         setRecentPlays({ ...recentResponse, id: newRecentId });
+
+         setCuratedLists({
+            ...curatedResponse,
+            mostPlayed: {
+               ...curatedResponse.mostPlayed,
+               id: newMostPlayedId
+            },
+            likedTracks: {
+               ...curatedResponse.likedTracks,
+               id: newLikedTracksId
+            },
+            followedMix: {
+               ...curatedResponse.followedMix,
+               id: newFollowedMixId
+            },
+            discoverWeekly: {
+               ...curatedResponse.discoverWeekly,
+               id: newDiscoverWeeklyId
+            }
+         });
+
+         // Update store
+         if (currentPlaylistId === newRecentId) {
             const newIndex = recentResponse.tracks.findIndex(t => t.id === currentTrackId);
+
             useTrackStore.setState({
                currentPlaylist: recentResponse.tracks,
                currentTrackIndex: newIndex
             });
-         } else {
-            // Generate new ID if track is gone or new session
-            newPlaylistId = `dynamic-${Date.now().toString(36) + Math.random().toString(36).slice(2, 8)}`;
-         }
+         } else if (currentPlaylistId === newMostPlayedId) {
+            const newIndex = curatedResponse.mostPlayed.tracks.findIndex(t => t.id === currentTrackId);
 
-         setRecentPlays({ ...recentResponse, id: newPlaylistId });
-         setCuratedLists(curatedResponse);
+            useTrackStore.setState({
+               currentPlaylist: curatedResponse.mostPlayed.tracks,
+               currentTrackIndex: newIndex
+            });
+         } else if (currentPlaylistId === newLikedTracksId) {
+            const newIndex = curatedResponse.likedTracks.tracks.findIndex(t => t.id === currentTrackId);
+
+            useTrackStore.setState({
+               currentPlaylist: curatedResponse.likedTracks.tracks,
+               currentTrackIndex: newIndex
+            });
+         } else if (currentPlaylistId === newFollowedMixId) {
+            const newIndex = curatedResponse.followedMix.tracks.findIndex(t => t.id === currentTrackId);
+
+            useTrackStore.setState({
+               currentPlaylist: curatedResponse.followedMix.tracks,
+               currentTrackIndex: newIndex
+            });
+         } else if (currentPlaylistId === newDiscoverWeeklyId) {
+            const newIndex = curatedResponse.discoverWeekly.tracks.findIndex(t => t.id === currentTrackId);
+
+            useTrackStore.setState({
+               currentPlaylist: curatedResponse.discoverWeekly.tracks,
+               currentTrackIndex: newIndex
+            });
+         }
       } catch {
          notify('Dang! failed to get home..', notificationTypes.error);
 
@@ -63,7 +126,15 @@ const HomeScreen = () => {
       <View className="flex-1 bg-palette-90">
          {!loading && curatedLists && recentPlays && (
             <RefreshableScrollView onRefresh={getHomeData} loading={loading}>
-               <HomeTrackList items={recentPlays?.tracks} listTitle={'Recently Played Tracks'} emptyTitle={'Hmm..'} emptyBody={"Seems like you haven't played any tracks yet..."} playlistId={recentPlays.id} />
+               <HomeTrackList items={recentPlays?.tracks} listTitle={'Recently Played Tracks'} playlistId={recentPlays.id} emptyTitle={'Hmm..'} emptyBody={"Seems like you haven't played any tracks yet..."} />
+               <DynamicPlaylistList
+                  items={[
+                     { ...curatedLists?.likedTracks, id: curatedLists?.likedTracks?.id },
+                     { ...curatedLists?.followedMix, id: curatedLists?.followedMix?.id },
+                     { ...curatedLists?.discoverWeekly, id: curatedLists?.discoverWeekly?.id }
+                  ]}
+               />
+               <HomeTrackList items={curatedLists?.mostPlayed?.tracks} listTitle={curatedLists?.mostPlayed?.name} playlistId={curatedLists?.mostPlayed?.id} emptyTitle={'Interesting...'} emptyBody={"It seems like you haven't listened to anything yet..."} />
             </RefreshableScrollView>
          )}
 
