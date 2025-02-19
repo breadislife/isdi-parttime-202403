@@ -11,4 +11,6 @@ import PlaylistTrackItem from './PlaylistTrackItem';
 
 import HomeTrackItem from './HomeTrackItem';
 
-export { UserItem, TrackItem, PlaylistItem, AlbumItem, ProfileTrackItem, ProfilePlaylistItem, ProfileAlbumItem, PlaylistTrackItem, HomeTrackItem };
+import DynamicPlaylistItem from './DynamicPlaylistItem.jsx';
+
+export { UserItem, TrackItem, PlaylistItem, AlbumItem, ProfileTrackItem, ProfilePlaylistItem, ProfileAlbumItem, PlaylistTrackItem, HomeTrackItem, DynamicPlaylistItem };
