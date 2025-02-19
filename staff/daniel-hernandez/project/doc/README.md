@@ -6,53 +6,53 @@ BMP is a minimalistic music player made in react native.
 
 **User**
 
--  Search tracks
--  Like track
--  Dislike track
--  Create track
--  Edit track
--  Remove track
--  Play track
--  Pause track
--  Skip track
--  Rewind track
--  Loop track
--  Shuffle tracks
--  Download track
--  Adjust volume
--  Create playlist
--  Edit playlist
--  Add track to playlist
--  Remove track from playlist
--  Follow user
--  Unfollow user
--  Follow playlist
--  Unfollow playlist
--  Follow album
--  Unfollow album
--  Sync offline tracks
--  Manage offline storage
--  Share tracks
--  Share playlists
--  View user's playlists
--  View user's followers
--  View user's following
--  View user's liked tracks
--  View user's created playlists
--  View user's created tracks
--  View user's created albums
+-  [x] Search tracks
+-  [ ] Like track
+-  [ ] Dislike track
+-  [ ] Create track
+-  [ ] Edit track
+-  [ ] Remove track
+-  [x] Play track
+-  [x] Pause track
+-  [x] Skip track
+-  [x] Rewind track
+-  [x] Loop track
+-  [ ] Shuffle tracks
+-  [ ] Download track
+-  [x] Adjust volume
+-  [ ] Create playlist
+-  [ ] Edit playlist
+-  [ ] Add track to playlist
+-  [ ] Remove track from playlist
+-  [x] Follow user
+-  [x] Unfollow user
+-  [x] Follow playlist
+-  [x] Unfollow playlist
+-  [x] Follow album
+-  [x] Unfollow album
+-  [ ] Sync offline tracks
+-  [ ] Manage offline storage
+-  [ ] Share tracks
+-  [ ] Share playlists
+-  [x] View user's playlists
+-  [ ] View user's followers
+-  [ ] View user's following
+-  [ ] View user's liked tracks
+-  [x] View user's created playlists
+-  [x] View user's created tracks
+-  [x] View user's created albums
 
 **Anonymous user**
 
--  Search tracks
--  Play track
--  Pause track
--  Skip track
--  Rewind track
--  Loop track
--  Shuffle tracks
--  Adjust volume
--  Manage offline storage
+-  [ ] Search tracks
+-  [ ] Play track
+-  [ ] Pause track
+-  [ ] Skip track
+-  [ ] Rewind track
+-  [ ] Loop track
+-  [ ] Shuffle tracks
+-  [ ] Adjust volume
+-  [ ] Manage offline storage
 
 ## Version 0.1
 
