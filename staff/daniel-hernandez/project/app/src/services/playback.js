@@ -4,6 +4,9 @@ import { storage } from './storage';
 import { useTrackStore } from '../store/track';
 import player from './player';
 
+const dynamicPrefixes = [Config.RECENT_TRACKS_DYNAMIC_PREFIX, Config.MOST_PLAYED_DYNAMIC_PREFIX, Config.LIKED_TRACKS_DYNAMIC_PREFIX, Config.FOLLOWED_MIX_DYNAMIC_PREFIX, Config.DISCOVER_WEEKLY_DYNAMIC_PREFIX].join('|');
+const dynamicPattern = new RegExp(`^(${dynamicPrefixes})`);
+
 // This service needs to be registered for react-native-track-player to work
 export const playback = () => {
    TrackPlayer.addEventListener(Event.RemotePause, () => {
@@ -20,7 +23,7 @@ export const playback = () => {
 
       const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
       if (currentIndex === -1) return;
-     
+
       const nextIndex = currentIndex + 1;
       if (nextIndex >= currentPlaylist.length) return;
       const nextTrack = currentPlaylist[nextIndex];
@@ -56,7 +59,7 @@ export const playback = () => {
          return;
       }
 
-      if (!currentPlaylist || currentTrackIndex === null || currentTrackIndex <=0 || !currentPlaylistId || !currentTrackId) return;
+      if (!currentPlaylist || currentTrackIndex === null || currentTrackIndex <= 0 || !currentPlaylistId || !currentTrackId) return;
 
       const currentIndex = currentPlaylist.findIndex(t => t.id === currentTrackId);
 
@@ -104,7 +107,7 @@ export const playback = () => {
 
       const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
 
-      if (currentPlaylistId?.startsWith('dynamic-')) {
+      if (currentPlaylistId?.match(new RegExp(dynamicPattern))) {
          // Clear dynamic playlist data
          storage.delete(Config.CURRENT_PLAYLIST_KEY);
          storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
@@ -173,7 +176,8 @@ export const playback = () => {
       }
 
       const { currentPlaylist, currentTrackIndex, currentPlaylistId } = useTrackStore.getState();
-      if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && !currentPlaylistId?.startsWith('dynamic-')) {
+      if (currentPlaylist && currentTrackIndex !== null && currentPlaylistId && !currentPlaylistId?.match(new RegExp(dynamicPattern))) {
+         // Persist non-dynamic playlists
          let playlist;
 
          try {
@@ -188,6 +192,7 @@ export const playback = () => {
             }
          } catch {}
       } else {
+         // Clear dynamic playlists from storage
          storage.delete(Config.CURRENT_PLAYLIST_KEY);
          storage.delete(Config.CURRENT_PLAYLIST_INDEX_KEY);
          storage.delete(Config.CURRENT_PLAYLIST_ID_KEY);
