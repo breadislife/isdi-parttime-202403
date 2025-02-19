@@ -24,12 +24,14 @@ const PlaylistTrackItem = ({ item, onMore, playlist, index, playlistId }) => {
             </Text>
 
             <Text className="text-palette-40 font-spacemono text-sm leading-tight" numberOfLines={1} ellipsizeMode="tail">
-               {item?.artists?.length > 2
-                  ? `${item?.artists
-                       .slice(0, 2)
-                       .map(artist => artist?.username)
-                       .join(', ')}...`
-                  : item?.artists.map(artist => artist?.username).join(', ')}
+               {item?.artists?.length > 0
+                  ? item?.artists.length > 2
+                     ? `${item?.artists
+                          .slice(0, 2)
+                          .map(artist => artist?.username)
+                          .join(', ')}...`
+                     : item?.artists.map(artist => artist?.username).join(', ')
+                  : 'Various artists'}
             </Text>
             <Text className="text-palette-40 font-spacemono text-xs leading-snug" numberOfLines={1} ellipsizeMode="tail">{`${formatSeconds(item?.duration)}`}</Text>
          </View>
@@ -48,3 +50,4 @@ const PlaylistTrackItem = ({ item, onMore, playlist, index, playlistId }) => {
 };
 
 export default PlaylistTrackItem;
+

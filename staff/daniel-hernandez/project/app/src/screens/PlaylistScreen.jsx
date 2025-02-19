@@ -6,11 +6,12 @@ import SpinningLoader from '../components/loaders/SpinningLoader';
 import RetryButton from '../components/buttons/RetryButton';
 import PlaylistHeader from '../components/PlaylistHeader';
 import PlaylistTrackList from '../components/lists/PlaylistTrackList';
+import formatSeconds from '../utils/formatSeconds';
 import { trigger } from 'react-native-haptic-feedback';
 import services from '../services';
 
 const PlaylistScreen = ({ route }) => {
-   const { playlistId } = route.params;
+   const { playlistId, isDynamic, dynamicPlaylist } = route.params; /* isDynamic: true or null/undefined, dynamicPlaylist: { name, description, tracks } */
    const { notify, notificationTypes } = useNotification();
    const { currentTrackId } = useTrackStore();
 
@@ -18,14 +19,32 @@ const PlaylistScreen = ({ route }) => {
    const [playlistInfo, setPlaylistInfo] = useState(null);
 
    useEffect(() => {
-      getPlaylistInfo();
+      if (isDynamic) {
+         setPlaylistInfo({
+            ...dynamicPlaylist,
+            duration: formatSeconds(dynamicPlaylist.tracks.reduce((sum, track) => sum + Number(track.duration), 0)),
+            cannotBeFollowed: true,
+            isDynamic: isDynamic
+         });
+         setLoading(false);
+      } else {
+         getPlaylistInfo();
+      }
    }, [playlistId]);
 
    const getPlaylistInfo = useCallback(async () => {
       try {
          setLoading(true);
 
-         const info = await services.getPlaylistInfo(playlistId);
+         const info = isDynamic
+            ? {
+                 ...dynamicPlaylist,
+                 duration: formatSeconds(dynamicPlaylist.tracks.reduce((sum, track) => sum + Number(track.duration), 0)),
+                 cannotBeFollowed: true,
+                 isDynamic: isDynamic
+              }
+            : await services.getPlaylistInfo(playlistId);
+
          setPlaylistInfo(info);
       } catch {
          notify("Yeaozers couldn't get playlist...", notificationTypes.error);
@@ -33,7 +52,7 @@ const PlaylistScreen = ({ route }) => {
       } finally {
          setLoading(false);
       }
-   }, [playlistId, notify]);
+   }, [playlistId, notify, isDynamic, dynamicPlaylist]);
 
    const toggleFollowStatus = useCallback(prevInfo => {
       const updatedInfo = { ...prevInfo };
@@ -47,6 +66,8 @@ const PlaylistScreen = ({ route }) => {
    });
 
    const handleFollow = async id => {
+      if (isDynamic) return;
+
       trigger('impactMedium');
       setPlaylistInfo(prevInfo => toggleFollowStatus(prevInfo));
 
@@ -61,7 +82,9 @@ const PlaylistScreen = ({ route }) => {
    // TODO: create skeleton loader/placeholder ui of this screen
    return (
       <View className="flex-1 bg-palette-90">
-         {!loading && playlistInfo && <PlaylistTrackList className="top-0" items={playlistInfo.tracks} playlistId={playlistId} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<PlaylistHeader item={playlistInfo} onAdd={handleFollow} />} />}
+         {!loading && playlistInfo && (
+            <PlaylistTrackList className="top-0" isDynamic={isDynamic} items={playlistInfo.tracks} playlistId={playlistId} contentContainerStyle={{ paddingBottom: currentTrackId ? 150 : 85 }} ListHeaderComponent={<PlaylistHeader item={playlistInfo} onAdd={handleFollow} />} />
+         )}
 
          {loading && !playlistInfo && (
             <View className="flex-1 justify-center items-center">
