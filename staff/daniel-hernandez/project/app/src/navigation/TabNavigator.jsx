@@ -4,13 +4,13 @@ import { BlurView } from 'expo-blur';
 import { TabIcons } from '../../assets/images/icons';
 import { HomeScreen, SearchScreen, LibraryScreen } from '../screens';
 import FloatingPlayer from '../components/FloatingPlayer';
-import BaseStack from './BaseStack';
+import ScreenBundle from './ScreenBundle';
 
 const Tab = createBottomTabNavigator();
 
-const HomeStack = () => <BaseStack name="HomeScreen" component={HomeScreen} title="こんにちは, User." />;
-const SearchStack = () => <BaseStack name="SearchScreen" component={SearchScreen} title="Search." />;
-const LibraryStack = () => <BaseStack name="LibraryScreen" component={LibraryScreen} title="Library." />;
+const HomeStack = () => <ScreenBundle name="HomeScreen" component={HomeScreen} title="こんにちは, User." />;
+const SearchStack = () => <ScreenBundle name="SearchScreen" component={SearchScreen} title="Search." />;
+const LibraryStack = () => <ScreenBundle name="LibraryScreen" component={LibraryScreen} title="Library." />;
 
 const TabNavigator = () => (
    <>
