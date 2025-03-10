@@ -1,7 +1,6 @@
 {
    "name": "api",
    "version": "0.0.0",
-   "description": "",
    "main": "index.js",
    "type": "module",
    "scripts": {
@@ -13,9 +12,6 @@
       "test-coverage": "c8 --experimental-monocart --reporter=html --reporter=text mocha tests/**/*.spec.js",
       "populate": "node data/populate/index.js"
    },
-   "keywords": [],
-   "author": "",
-   "license": "ISC",
    "dependencies": {
       "bcryptjs": "^2.4.3",
       "com": "file:../com",
