@@ -7,7 +7,7 @@ import formatSeconds from '../../utils/formatSeconds';
 
 const PlaylistItem = ({ item, onMore }) => {
    const navigation = useNavigation();
-   const { currentPlaylistId } = useTrackStore();
+   const currentPlaylistId = useTrackStore(state => state.currentPlaylistId);
 
    return (
       <Pressable key={item.id} className="py-2 flex-row items-start w-[100%] px-5 active:bg-palette-80 bg-palette-90" onPress={() => navigation?.navigate('PlaylistScreen', { playlistId: item.id })}>

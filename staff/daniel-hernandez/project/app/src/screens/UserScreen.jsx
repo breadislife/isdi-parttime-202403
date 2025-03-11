@@ -15,7 +15,7 @@ import services from '../services';
 const UserScreen = ({ route }) => {
    const { userId } = route.params;
    const { notify, notificationTypes } = useNotification();
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
 
    const [loading, setLoading] = useState(true);
    const [userInfo, setUserInfo] = useState(null);

@@ -13,7 +13,7 @@ import services from '../services';
 const PlaylistScreen = ({ route }) => {
    const { playlistId, isDynamic, dynamicPlaylist } = route.params; /* isDynamic: true or null/undefined, dynamicPlaylist: { name, description, tracks } */
    const { notify, notificationTypes } = useNotification();
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
 
    const [loading, setLoading] = useState(true);
    const [playlistInfo, setPlaylistInfo] = useState(null);

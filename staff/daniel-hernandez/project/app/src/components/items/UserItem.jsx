@@ -8,7 +8,7 @@ import extractPayload from '../../utils/extractPayload';
 
 const UserItem = ({ item, onAdd }) => {
    const navigation = useNavigation();
-   const { userToken } = useAuthStore();
+   const userToken = useAuthStore(state => state.userToken);
    const { notify, notificationTypes } = useNotification();
    const [currentUserId, setCurrentUserId] = useState(null);
 

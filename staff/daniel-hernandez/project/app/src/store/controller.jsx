@@ -9,7 +9,8 @@ export const useControllerStore = create(set => ({
 }));
 
 export const useAbortController = () => {
-   const { abortController, setAbortController } = useControllerStore();
+   const abortController = useControllerStore(state => state.abortController);
+   const setAbortController = useControllerStore(state => state.setAbortController);
 
    const abortCurrentAbortController = useCallback(() => {
       if (abortController) abortController.abort();

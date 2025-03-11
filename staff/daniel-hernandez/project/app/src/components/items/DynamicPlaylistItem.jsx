@@ -6,7 +6,7 @@ import formatSeconds from '../../utils/formatSeconds';
 
 const DynamicPlaylistItem = ({ item }) => {
    const navigation = useNavigation();
-   const { currentPlaylistId } = useTrackStore();
+   const currentPlaylistId = useTrackStore(state => state.currentPlaylistId);
 
    return (
       <Pressable className="bg-palette-80 active:opacity-70 rounded-lg p-1 mx-2 my-1.5 items-center w-36 h-44" onPress={() => navigation?.navigate('PlaylistScreen', { playlistId: item.id, isDynamic: true, dynamicPlaylist: item })}>

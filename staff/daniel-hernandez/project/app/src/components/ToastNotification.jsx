@@ -3,7 +3,9 @@ import { Animated, Text } from 'react-native';
 import { useNotificationStore } from '../store/notification';
 
 const ToastNotification = ({ duration = 3000 }) => {
-   const { message, type } = useNotificationStore();
+   const message = useNotificationStore(state => state.message);
+   const type = useNotificationStore(state => state.type);
+
    const slideAnimation = useRef(new Animated.Value(-100)).current; // Initial pos (above the screen (IOS))
 
    useEffect(() => {

@@ -11,7 +11,7 @@ import services from '../services';
 const AlbumScreen = ({ route }) => {
    const { albumId } = route.params;
    const { notify, notificationTypes } = useNotification();
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
 
    const [loading, setLoading] = useState(true);
    const [albumInfo, setAlbumInfo] = useState(null);

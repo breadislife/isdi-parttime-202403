@@ -5,7 +5,7 @@ import SpinningLoader from '../loaders/SpinningLoader';
 import formatSeconds from '../../utils/formatSeconds';
 
 const ProfileTrackItem = ({ item }) => {
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
    const { handlePlay } = usePlayerHandlers();
 
    return (

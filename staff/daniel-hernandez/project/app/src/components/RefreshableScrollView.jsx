@@ -5,7 +5,7 @@ import SpinningLoader from './loaders/SpinningLoader';
 import { trigger } from 'react-native-haptic-feedback';
 
 const RefreshableScrollView = ({ children, onRefresh, loading }) => {
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
 
    const [pullDistance, setPullDistance] = useState(0);
    const scaleAnim = useRef(new Animated.Value(0.5)).current;

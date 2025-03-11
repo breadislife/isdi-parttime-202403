@@ -5,8 +5,10 @@ import useNotification from './useNotification';
 import services, { storage } from '../services';
 
 const useAuth = () => {
-   const { setSignIn, setSignOut } = useAuthStore();
    const { notify, notificationTypes } = useNotification();
+
+   const setSignIn = useAuthStore(state => state.setSignIn);
+   const setSignOut = useAuthStore(state => state.setSignOut);
 
    const signIn = async (email, password) => {
       let token;

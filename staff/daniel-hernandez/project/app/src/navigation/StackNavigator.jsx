@@ -7,7 +7,9 @@ import BackButton from '../components/buttons/BackButton';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
-   const { isLoading, userToken, isSignout } = useAuthStore();
+   const isLoading = useAuthStore(state => state.isLoading);
+   const userToken = useAuthStore(state => state.userToken);
+   const isSignout = useAuthStore(state => state.isSignout);
 
    return (
       <Stack.Navigator

@@ -9,7 +9,8 @@ import services from '../services';
 
 const usePlayer = () => {
    const { createNewAbortController, abortCurrentAbortController } = useAbortController();
-   const { setCurrentTrackId } = useTrackStore();
+
+   const setCurrentTrackId = useTrackStore(state => state.setCurrentTrackId);
 
    const register = useCallback(() => {
       TrackPlayer.registerPlaybackService(() => services.playback);

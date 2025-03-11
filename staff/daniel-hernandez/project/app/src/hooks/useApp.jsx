@@ -10,7 +10,9 @@ import validate from 'com/validation';
 const useApp = () => {
    const { setup } = usePlayer();
    const { notify, notificationTypes } = useNotification();
-   const { setRestoreToken, setSignOut } = useAuthStore();
+
+   const setRestoreToken = useAuthStore(state => state.setRestoreToken);
+   const setSignOut = useAuthStore(state => state.setSignOut);
 
    const initialize = async () => {
       let userToken;

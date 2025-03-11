@@ -19,7 +19,7 @@ const DEFAULT_PILL = { label: 'All', queryType: [...Object.values(constants.quer
 // TODO: add caching to results
 const SearchScreen = () => {
    const { notify, notificationTypes } = useNotification();
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
 
    const [query, setQuery] = useState('');
    const [status, setStatus] = useState({ loading: false, queryDone: false }); // TODO: add skeleton loader for a nicer experience when loading

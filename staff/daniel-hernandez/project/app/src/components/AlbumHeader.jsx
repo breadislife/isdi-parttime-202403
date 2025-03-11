@@ -8,8 +8,9 @@ import { formatDate } from '../utils/formatDate';
 
 const AlbumHeader = ({ item }) => {
    const { handlePlay, handlePlayPause } = usePlayerHandlers();
-   const { currentPlaylistId } = useTrackStore();
    const { playing } = useIsPlaying();
+
+   const currentPlaylistId = useTrackStore(state => state.currentPlaylistId);
 
    return (
       <View className="bg-palette-90 w-full my-1.5">

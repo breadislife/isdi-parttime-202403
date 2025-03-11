@@ -8,7 +8,7 @@ import formatSeconds from '../utils/formatSeconds';
 
 const PlaylistHeader = ({ item, onAdd }) => {
    const { handlePlay, handlePlayPause } = usePlayerHandlers();
-   const { currentPlaylistId } = useTrackStore();
+   const currentPlaylistId = useTrackStore(state => state.currentPlaylistId);
    const { playing } = useIsPlaying();
 
    return (
@@ -63,7 +63,7 @@ const PlaylistHeader = ({ item, onAdd }) => {
                            handlePlayPause();
                         } else {
                            // Pass playlist id
-                           handlePlay(null, item.tracks, 0, item.id);
+                           if (item.tracks.length > 0) handlePlay(null, item.tracks, 0, item.id);
                         }
                      }}
                      isPlaying={currentPlaylistId === item.id && playing}

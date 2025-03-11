@@ -6,7 +6,7 @@ import { ItemIcons } from '../../../assets/images/icons';
 import formatSeconds from '../../utils/formatSeconds';
 
 const PlaylistTrackItem = ({ item, onMore, playlist, index, playlistId }) => {
-   const { currentTrackId } = useTrackStore();
+   const currentTrackId = useTrackStore(state => state.currentTrackId);
    const { handlePlay } = usePlayerHandlers();
 
    return (
